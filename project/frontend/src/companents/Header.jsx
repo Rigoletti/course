@@ -98,14 +98,9 @@ const Header = () => {
               </ul>
             </li>
           </ul>
-
-          {/* Ссылки "Войти" и "Регистрация" справа */}
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-              <Link to="/login" className="nav-link literata-font">Войти</Link>
-            </li>
-            <li className="nav-item">
-              <Link to="/register" className="nav-link literata-font">Регистрация</Link>
+              <Link to="/authorization" className="nav-link literata-font">Авторизация</Link>
             </li>
           </ul>
         </div>
