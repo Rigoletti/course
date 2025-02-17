@@ -1,67 +1,187 @@
 import React from "react";
+import "../style/HomeSection.css";
 
 const HomeSection = () => {
   return (
-    <div className="bg-dark text-white py-5">
+    <div className="home-section dark-background">
       <div className="container">
-        <h2 className="text-center mb-4">Browse talent by category</h2>
-        <p className="text-center mb-5">
-          Looking for work? <a href="#!" className="text-primary">Browse jobs</a>
-        </p>
+        {/* Заголовок */}
+        <h2 className="section-title">Популярные услуги</h2>
 
-        <div className="row">
-          {/* Категория 1: Development & IT */}
-          <div className="col-md-3 mb-4">
-            <div className="card bg-secondary text-white h-100">
-              <div className="card-body">
-                <h5 className="card-title">Development & IT</h5>
-                <p className="card-text">
-                  Some quick example text to build on the card title and make up
-                  the bulk of the card's content.
-                </p>
-                <p className="text-warning">4.85/5</p>
+        {/* Карточки услуг */}
+        <div className="card-grid">
+          {/* Веб-разработка */}
+          <div className="card">
+            <div className="face face1">
+              <div className="content">
+                <div 
+                  className="icon" 
+                  style={{ backgroundImage: `url(https://via.placeholder.com/150/FF6347/FFFFFF?text=Web)` }}
+                >
+                  <i className="fa fa-code" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
+            <div className="face face2">
+              <div className="content">
+                <h3>
+                  <a href="#web-development" target="_blank">Веб-разработка</a>
+                </h3>
+                <p>Создание современных и адаптивных веб-сайтов и приложений.</p>
               </div>
             </div>
           </div>
 
-          {/* Категория 2: Design & Creative */}
-          <div className="col-md-3 mb-4">
-            <div className="card bg-secondary text-white h-100">
-              <div className="card-body">
-                <h5 className="card-title">Design & Creative</h5>
-                <p className="card-text">
-                  Some quick example text to build on the card title and make up
-                  the bulk of the card's content.
-                </p>
-                <p className="text-warning">4.85/5</p>
+          {/* Мобильная разработка */}
+          <div className="card">
+            <div className="face face1">
+              <div className="content">
+                <div 
+                  className="icon" 
+                  style={{ backgroundImage: `url(https://via.placeholder.com/150/6495ED/FFFFFF?text=Mobile)` }}
+                >
+                  <i className="fa fa-mobile" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
+            <div className="face face2">
+              <div className="content">
+                <h3>
+                  <a href="#mobile-development" target="_blank">Мобильная разработка</a>
+                </h3>
+                <p>Разработка мобильных приложений для iOS и Android.</p>
               </div>
             </div>
           </div>
 
-          {/* Категория 3: Sales & Marketing */}
-          <div className="col-md-3 mb-4">
-            <div className="card bg-secondary text-white h-100">
-              <div className="card-body">
-                <h5 className="card-title">Sales & Marketing</h5>
-                <p className="card-text">
-                  Some quick example text to build on the card title and make up
-                  the bulk of the card's content.
-                </p>
-                <p className="text-warning">4.85/5</p>
+          {/* Облачные решения */}
+          <div className="card">
+            <div className="face face1">
+              <div className="content">
+                <div 
+                  className="icon" 
+                  style={{ backgroundImage: `url(https://via.placeholder.com/150/00CED1/FFFFFF?text=Cloud)` }}
+                >
+                  <i className="fa fa-cloud" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
+            <div className="face face2">
+              <div className="content">
+                <h3>
+                  <a href="#cloud-solutions" target="_blank">Облачные решения</a>
+                </h3>
+                <p>Интеграция и управление облачными сервисами и инфраструктурой.</p>
               </div>
             </div>
           </div>
 
-          {/* Категория 4: Finance & Accounting */}
-          <div className="col-md-3 mb-4">
-            <div className="card bg-secondary text-white h-100">
-              <div className="card-body">
-                <h5 className="card-title">Finance & Accounting</h5>
-                <p className="card-text">
-                  Some quick example text to build on the card title and make up
-                  the bulk of the card's content.
-                </p>
-                <p className="text-warning">4.85/5</p>
+          {/* SEO-продвижение */}
+          <div className="card">
+            <div className="face face1">
+              <div className="content">
+                <div 
+                  className="icon" 
+                  style={{ backgroundImage: `url(https://via.placeholder.com/150/FFD700/FFFFFF?text=SEO)` }}
+                >
+                  <i className="fa fa-line-chart" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
+            <div className="face face2">
+              <div className="content">
+                <h3>
+                  <a href="#seo" target="_blank">SEO-продвижение</a>
+                </h3>
+                <p>Увеличение видимости вашего сайта в поисковых системах.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Цифровой маркетинг */}
+          <div className="card">
+            <div className="face face1">
+              <div className="content">
+                <div 
+                  className="icon" 
+                  style={{ backgroundImage: `url(https://via.placeholder.com/150/EE82EE/FFFFFF?text=Marketing)` }}
+                >
+                  <i className="fa fa-bullhorn" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
+            <div className="face face2">
+              <div className="content">
+                <h3>
+                  <a href="#digital-marketing" target="_blank">Цифровой маркетинг</a>
+                </h3>
+                <p>Привлечение целевой аудитории через онлайн-каналы.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Кибербезопасность */}
+          <div className="card">
+            <div className="face face1">
+              <div className="content">
+                <div 
+                  className="icon" 
+                  style={{ backgroundImage: `url(https://via.placeholder.com/150/FF69B4/FFFFFF?text=Security)` }}
+                >
+                  <i className="fa fa-shield" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
+            <div className="face face2">
+              <div className="content">
+                <h3>
+                  <a href="#cybersecurity" target="_blank">Кибербезопасность</a>
+                </h3>
+                <p>Защита ваших данных от кибератак и угроз.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Аналитика данных */}
+          <div className="card">
+            <div className="face face1">
+              <div className="content">
+                <div 
+                  className="icon" 
+                  style={{ backgroundImage: `url(https://via.placeholder.com/150/00BFFF/FFFFFF?text=Data)` }}
+                >
+                  <i className="fa fa-bar-chart" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
+            <div className="face face2">
+              <div className="content">
+                <h3>
+                  <a href="#data-analytics" target="_blank">Аналитика данных</a>
+                </h3>
+                <p>Превращение данных в осмысленные решения для бизнеса.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Новая карточка - Консалтинг */}
+          <div className="card">
+            <div className="face face1">
+              <div className="content">
+                <div 
+                  className="icon" 
+                  style={{ backgroundImage: `url(https://via.placeholder.com/150/32CD32/FFFFFF?text=Consulting)` }}
+                >
+                  <i className="fa fa-lightbulb-o" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
+            <div className="face face2">
+              <div className="content">
+                <h3>
+                  <a href="#consulting" target="_blank">Бизнес-консалтинг</a>
+                </h3>
+                <p>Стратегические решения для роста вашего бизнеса.</p>
               </div>
             </div>
           </div>

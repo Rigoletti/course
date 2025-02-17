@@ -7,10 +7,12 @@ const Header = () => {
   return (
     <header className="sticky-top header" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>
       <nav className="navbar navbar-expand-lg navbar-dark container">
+        {/* Логотип */}
         <Link to="/" className="navbar-brand">
           <img src={logo} alt="логотип" className="img-fluid" style={{ height: '25px' }} />
         </Link>
-        {/* Кнопка для мобильного меню */}
+
+        {/* Кнопка тогглера для мобильной версии */}
         <button
           className="navbar-toggler"
           type="button"
@@ -22,9 +24,11 @@ const Header = () => {
         >
           <span className="navbar-toggler-icon"></span>
         </button>
-        {/* Основное меню */}
+
+        {/* Содержимое навигации */}
         <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto">
+          {/* Основные ссылки (ближе к логотипу) */}
+          <ul className="navbar-nav">
             <li className="nav-item dropdown">
               <a
                 className="nav-link dropdown-toggle literata-font"
@@ -92,6 +96,16 @@ const Header = () => {
                 <li><Link to="/contact2" className="dropdown-item literata-font">Контакт 2</Link></li>
                 <li><Link to="/contact3" className="dropdown-item literata-font">Контакт 3</Link></li>
               </ul>
+            </li>
+          </ul>
+
+          {/* Ссылки "Войти" и "Регистрация" справа */}
+          <ul className="navbar-nav ms-auto">
+            <li className="nav-item">
+              <Link to="/login" className="nav-link literata-font">Войти</Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/register" className="nav-link literata-font">Регистрация</Link>
             </li>
           </ul>
         </div>
