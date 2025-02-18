@@ -115,3 +115,30 @@
   .home-section .container a:hover {
     color: #ff0057;
   }
+  
+  /* Основной стиль остается без изменений */
+
+/* Медиа-запрос для мобильных устройств */
+@media (max-width: 768px) {
+  /* Показываем face2 по умолчанию */
+  .home-section .container .card .face.face1 {
+    transform: translateY(0px); /* Убираем анимацию */
+    background: #333; /* Сохраняем фон */
+    display: none; /* Скрываем первый слой */
+  }
+
+  .home-section .container .card .face.face2 {
+    transform: translateY(0); /* Убираем анимацию */
+    background: #fff; /* Сохраняем фон */
+    display: flex; /* Показываем второй слой */
+  }
+
+  /* Увеличиваем размер текста для лучшей читаемости */
+  .home-section .container .card .face.face2 .content h3 {
+    font-size: 18px;
+  }
+
+  .home-section .container .card .face.face2 .content p {
+    font-size: 14px;
+  }
+}

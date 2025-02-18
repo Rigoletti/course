@@ -1,13 +1,17 @@
+/* Общие стили */
 .videoSection {
   font-family: 'Roboto', serif;
 }
 
+/* Контейнер кнопок */
 .dFlex {
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Столбцовая ориентация по умолчанию */
   gap: 20px;
+  width: 100%; /* Занимает всю ширину */
 }
 
+/* На ширине больше 768px меняем на строку */
 @media (min-width: 768px) {
   .dFlex {
     flex-direction: row;
@@ -17,6 +21,9 @@
 /* Стили для кнопок */
 .wrapper {
   position: relative;
+  width: 100%; /* Адаптивная ширина */
+  max-width: 250px; /* Максимальная ширина кнопки */
+  margin: 0 auto; /* Центрируем кнопки */
 }
 
 .linkWrapper {
@@ -25,7 +32,7 @@
 
 .linkWrapper a {
   display: block;
-  width: 250px;
+  width: 100%; /* Адаптивная ширина */
   height: 50px;
   line-height: 50px;
   font-weight: bold;
@@ -62,7 +69,6 @@
 }
 
 .linkWrapper a:hover {
-  width: 200px;
   border: 3px solid #2ecc71;
   background: transparent;
   color: #2ecc71;
@@ -97,4 +103,24 @@
   margin-right: 8px; 
   position: relative;
   top: 2px; 
+}
+
+/* Увеличиваем высоту контента, чтобы поместить обе кнопки */
+main {
+  min-height: 100vh; /* Минимальная высота равна высоте viewport */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Для маленьких экранов */
+@media (max-width: 768px) {
+  .dFlex {
+    flex-direction: column; /* Вертикальное расположение */
+    gap: 15px; /* Уменьшаем отступ между кнопками */
+  }
+
+  .wrapper {
+    max-width: 100%; /* Полная ширина на маленьких экранах */
+  }
 }

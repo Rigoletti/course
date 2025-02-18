@@ -17,7 +17,7 @@ const VideoSection = () => {
         Ваш браузер не поддерживает видео.
       </video>
       {/* Контент поверх видео */}
-      <div className={`position-relative d-flex flex-column align-items-center justify-content-center vh-100 text-white text-center p-4`}>
+      <div className={`position-relative d-flex flex-column align-items-center justify-content-center min-vh-100 text-white text-center p-4`}>
         <h1 className="display-4 fw-bold mb-4">
           Найдите лучших фрилансеров
         </h1>

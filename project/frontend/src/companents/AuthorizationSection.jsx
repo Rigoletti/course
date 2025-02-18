@@ -1,60 +1,133 @@
-// AuthorizationSection.jsx
 import React, { useState } from "react";
-import "../style/AuthorizationSection.css"; // Убедитесь, что путь к стилям корректен
+import { registerUser, loginUser } from "../api/api"; // Импортируем функции из api.js
+import "../style/AuthorizationSection.css";
 
 const AuthorizationSection = () => {
   const [isSignUpActive, setIsSignUpActive] = useState(false);
+  const [message, setMessage] = useState(null);
 
   const togglePanel = () => {
-    setIsSignUpActive(!isSignUpActive); // Переключаем состояние
+    setIsSignUpActive(!isSignUpActive);
+    clearMessage();
+  };
+
+  const clearMessage = () => {
+    setMessage(null);
+  };
+
+  const showMessage = (type, content) => {
+    clearMessage();
+    setMessage({ type, content });
+    setTimeout(clearMessage, 3000);
+  };
+
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const firstName = form.firstName.value.trim();
+    const lastName = form.lastName.value.trim();
+    const username = form.username.value.trim();
+    const email = form.email.value.trim();
+    const password = form.password.value;
+  
+    if (!firstName || !lastName || !username || !email || !password) {
+      return showMessage("error", "Пожалуйста, заполните все поля.");
+    }
+  
+    try {
+      const data = await registerUser({ firstName, lastName, username, email, password });
+      showMessage("success", data.message || "Регистрация успешна");
+      setTimeout(() => {
+        setIsSignUpActive(false); 
+      }, 3000);
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.message) {
+        showMessage("error", error.response.data.message);
+      } else {
+        showMessage("error", "Произошла ошибка при регистрации.");
+      }
+    }
+  };
+
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const email = form.email.value.trim();
+    const password = form.password.value;
+
+    if (!email || !password) {
+      return showMessage("error", "Пожалуйста, заполните все поля.");
+    }
+
+    try {
+      const data = await loginUser({ email, password });
+      localStorage.setItem("token", data.token); // Сохраняем токен в localStorage
+      showMessage("success", data.message || "Авторизация успешна");
+      setTimeout(() => {
+        window.location.href = "/dashboard"; // Переходим на страницу после входа
+      }, 3000);
+    } catch (error) {
+      showMessage("error", error.message || "Ошибка авторизации");
+    }
   };
 
   return (
     <div className="authorization-container">
-      {/* Forms Container */}
       <div className="forms-container">
-        {/* Регистрация */}
-        <div
-          className={`form-wrapper form-signup ${
-            isSignUpActive ? "active" : "inactive"
-          }`}
-        >
-          <form className="auth-form" id="form1" onSubmit={(e) => e.preventDefault()}>
-            <h2 className="form-title">Регистрация</h2>
-            <input type="text" placeholder="Имя пользователя" className="auth-input" required />
-            <input type="email" placeholder="Email" className="auth-input" required />
-            <input type="password" placeholder="Пароль" className="auth-input" required />
+        {/* Форма регистрации */}
+        <div className={`form-wrapper form-signup ${isSignUpActive ? "active" : "inactive"}`}>
+          <form className="auth-form" id="form1" onSubmit={handleRegisterSubmit}>
+            <h2 className="form-title">Присоединяйтесь к нам</h2>
+            <input
+              type="text"
+              name="firstName"
+              placeholder="Имя"
+              className="auth-input"
+              required
+            />
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Фамилия"
+              className="auth-input"
+              required
+            />
+            <input
+              type="text"
+              name="username"
+              placeholder="Логин"
+              className="auth-input"
+              required
+            />
+            <input type="email" name="email" placeholder="Email" className="auth-input" required />
+            <input
+              type="password"
+              name="password"
+              placeholder="Пароль"
+              className="auth-input"
+              required
+            />
             <button className="auth-btn" type="submit">
-              Зарегистрироваться
+              Создать аккаунт
             </button>
-            <p className="toggle-text">
-              Уже есть аккаунт?{" "}
-              <span className="toggle-link" onClick={togglePanel}>
-                Войти
-              </span>
-            </p>
           </form>
         </div>
 
-        {/* Авторизация */}
-        <div
-          className={`form-wrapper form-signin ${
-            !isSignUpActive ? "active" : "inactive"
-          }`}
-        >
-          <form className="auth-form" id="form2" onSubmit={(e) => e.preventDefault()}>
-            <h2 className="form-title">Авторизация</h2>
-            <input type="email" placeholder="Email" className="auth-input" required />
-            <input type="password" placeholder="Пароль" className="auth-input" required />
+        {/* Форма входа */}
+        <div className={`form-wrapper form-signin ${!isSignUpActive ? "active" : "inactive"}`}>
+          <form className="auth-form" id="form2" onSubmit={handleLoginSubmit}>
+            <h2 className="form-title">Вход в систему</h2>
+            <input type="email" name="email" placeholder="Email" className="auth-input" required />
+            <input
+              type="password"
+              name="password"
+              placeholder="Пароль"
+              className="auth-input"
+              required
+            />
             <button className="auth-btn" type="submit">
               Войти
             </button>
-            <p className="toggle-text">
-              Нет аккаунта?{" "}
-              <span className="toggle-link" onClick={togglePanel}>
-                Зарегистрироваться
-              </span>
-            </p>
           </form>
         </div>
       </div>
@@ -63,31 +136,38 @@ const AuthorizationSection = () => {
       <div className="overlay-container">
         <div className="overlay overlay-left">
           <div className="overlay-panel">
-            <h1>{!isSignUpActive ? "Добро пожаловать!" : "Привет, друг!"}</h1>
+            <h1>{!isSignUpActive ? "Найдите идеального исполнителя!" : "Станьте частью команды!"}</h1>
             <p>
               {!isSignUpActive
-                ? "Чтобы оставаться на связи, войдите с помощью своих данных"
-                : "Введите свои данные и начните свое путешествие с нами"}
+                ? "Опубликуйте свой проект и получите предложения от лучших фрилансеров."
+                : "Создайте аккаунт и начните зарабатывать на своих навыках."}
             </p>
             <button className="toggle-btn" onClick={togglePanel}>
-              {isSignUpActive ? "Войти" : "Зарегистрироваться"}
+              {isSignUpActive ? "Войти" : "Создать аккаунт"}
             </button>
           </div>
         </div>
         <div className="overlay overlay-right">
           <div className="overlay-panel">
-            <h1>{!isSignUpActive ? "Привет, друг!" : "Добро пожаловать!"}</h1>
+            <h1>{!isSignUpActive ? "Станьте частью команды!" : "Найдите идеального исполнителя!"}</h1>
             <p>
               {!isSignUpActive
-                ? "Введите свои данные и начните свое путешествие с нами"
-                : "Чтобы оставаться на связи, войдите с помощью своих данных"}
+                ? "Создайте аккаунт и начните зарабатывать на своих навыках."
+                : "Опубликуйте свой проект и получите предложения от лучших фрилансеров."}
             </p>
             <button className="toggle-btn" onClick={togglePanel}>
-              {isSignUpActive ? "Войти" : "Зарегистрироваться"}
+              {isSignUpActive ? "Войти" : "Создать аккаунт"}
             </button>
           </div>
         </div>
       </div>
+
+      {/* Блок уведомлений */}
+      {message && (
+        <div className="notification-container">
+          <div className={`${message.type}-message`}>{message.content}</div>
+        </div>
+      )}
     </div>
   );
 };

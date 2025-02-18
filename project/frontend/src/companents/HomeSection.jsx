@@ -7,7 +7,6 @@ const HomeSection = () => {
       <div className="container">
         {/* Заголовок */}
         <h2 className="section-title">Популярные услуги</h2>
-
         {/* Карточки услуг */}
         <div className="card-grid">
           {/* Веб-разработка */}
@@ -31,7 +30,6 @@ const HomeSection = () => {
               </div>
             </div>
           </div>
-
           {/* Мобильная разработка */}
           <div className="card">
             <div className="face face1">
@@ -53,7 +51,6 @@ const HomeSection = () => {
               </div>
             </div>
           </div>
-
           {/* Облачные решения */}
           <div className="card">
             <div className="face face1">
@@ -75,7 +72,6 @@ const HomeSection = () => {
               </div>
             </div>
           </div>
-
           {/* SEO-продвижение */}
           <div className="card">
             <div className="face face1">
@@ -97,7 +93,6 @@ const HomeSection = () => {
               </div>
             </div>
           </div>
-
           {/* Цифровой маркетинг */}
           <div className="card">
             <div className="face face1">
@@ -119,7 +114,6 @@ const HomeSection = () => {
               </div>
             </div>
           </div>
-
           {/* Кибербезопасность */}
           <div className="card">
             <div className="face face1">
@@ -141,7 +135,6 @@ const HomeSection = () => {
               </div>
             </div>
           </div>
-
           {/* Аналитика данных */}
           <div className="card">
             <div className="face face1">
@@ -163,8 +156,7 @@ const HomeSection = () => {
               </div>
             </div>
           </div>
-
-          {/* Новая карточка - Консалтинг */}
+          {/* Консалтинг */}
           <div className="card">
             <div className="face face1">
               <div className="content">
