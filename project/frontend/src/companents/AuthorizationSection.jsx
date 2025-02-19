@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { registerUser, loginUser } from "../api/api"; // Импортируем функции из api.js
+import { registerUser, loginUser } from "../api/api"; 
 import "../style/AuthorizationSection.css";
 
 const AuthorizationSection = () => {
@@ -61,10 +61,10 @@ const AuthorizationSection = () => {
 
     try {
       const data = await loginUser({ email, password });
-      localStorage.setItem("token", data.token); // Сохраняем токен в localStorage
+      localStorage.setItem("token", data.token); 
       showMessage("success", data.message || "Авторизация успешна");
       setTimeout(() => {
-        window.location.href = "/dashboard"; // Переходим на страницу после входа
+        window.location.href = "/dashboard";
       }, 3000);
     } catch (error) {
       showMessage("error", error.message || "Ошибка авторизации");

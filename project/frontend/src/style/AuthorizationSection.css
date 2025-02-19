@@ -445,3 +445,27 @@
 .auth-btn:hover {
   transform: scale(1.05);
 }
+
+/* Стили для заголовка в overlay-panel */
+.overlay-title {
+  color: #ffffff; /* Белый цвет текста */
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Тень для лучшего контраста */
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Стили для описания в overlay-panel */
+.overlay-description {
+  color: #f0f0f0; /* Светло-серый цвет текста */
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Тень для лучшего контраста */
+  font-size: 16px;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+
+/* Альтернативный вариант: добавление фоновой подложки */
+.overlay-panel {
+  background: rgba(0, 0, 0, 0.5); /* Полупрозрачный черный фон */
+  padding: 20px;
+  border-radius: 10px;
+}
