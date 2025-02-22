@@ -1,9 +1,27 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react'; // Добавлены useState и useEffect
+import { Link, useNavigate } from 'react-router-dom'; // Добавлен useNavigate
 import logo from '../img/logo_white.png';
 import '../style/Header.css';
 
 const Header = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
+
+  // Проверка авторизации при загрузке компонента
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  // Функция для выхода
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
+    navigate('/');
+  };
+
   return (
     <header className="sticky-top header" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>
       <nav className="navbar navbar-expand-lg navbar-dark container">
@@ -99,9 +117,17 @@ const Header = () => {
             </li>
           </ul>
           <ul className="navbar-nav ms-auto">
-            <li className="nav-item">
-              <Link to="/authorization" className="nav-link literata-font">Авторизация</Link>
-            </li>
+            {isAuthenticated ? (
+              <>
+                <li className="nav-item">
+                  <Link to="/profile" className="nav-link literata-font">Профиль</Link>
+                </li>
+              </>
+            ) : (
+              <li className="nav-item">
+                <Link to="/authorization" className="nav-link literata-font">Авторизация</Link>
+              </li>
+            )}
           </ul>
         </div>
       </nav>

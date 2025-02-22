@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { registerUser, loginUser } from "../api/api"; 
+import { useNavigate } from "react-router-dom";
+import { registerUser, loginUser } from "../api/api";
 import "../style/AuthorizationSection.css";
 
 const AuthorizationSection = () => {
   const [isSignUpActive, setIsSignUpActive] = useState(false);
   const [message, setMessage] = useState(null);
+  const navigate = useNavigate();
 
   const togglePanel = () => {
     setIsSignUpActive(!isSignUpActive);
@@ -21,6 +23,24 @@ const AuthorizationSection = () => {
     setTimeout(clearMessage, 3000);
   };
 
+  // Валидация логина (латиница)
+  const validateLogin = (username) => {
+    const regex = /^[a-zA-Z0-9]+$/;
+    return regex.test(username);
+  };
+
+  // Валидация имени и фамилии (кириллица или латиница)
+  const validateName = (name) => {
+    const regex = /^[a-zA-Zа-яА-Я]+$/;
+    return regex.test(name);
+  };
+
+  // Валидация пароля
+  const validatePassword = (password) => {
+    const regex = /^(?=.*\d)(?=.*[A-Z]).{8,}$/;
+    return regex.test(password);
+  };
+
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -29,17 +49,30 @@ const AuthorizationSection = () => {
     const username = form.username.value.trim();
     const email = form.email.value.trim();
     const password = form.password.value;
-  
+
+    // Валидация имени и фамилии
+    if (!validateName(firstName) || !validateName(lastName)) {
+      return showMessage("error", "Имя и фамилия должны содержать только буквы (кириллица или латиница).");
+    }
+
+    // Валидация логина
+    if (!validateLogin(username)) {
+      return showMessage("error", "Логин должен содержать только латинские буквы и цифры.");
+    }
+
+    // Валидация пароля
+    if (!validatePassword(password)) {
+      return showMessage("error", "Пароль должен быть минимум 8 символов, содержать хотя бы одну цифру и одну заглавную букву.");
+    }
+
     if (!firstName || !lastName || !username || !email || !password) {
       return showMessage("error", "Пожалуйста, заполните все поля.");
     }
-  
+
     try {
       const data = await registerUser({ firstName, lastName, username, email, password });
       showMessage("success", data.message || "Регистрация успешна");
-      setTimeout(() => {
-        setIsSignUpActive(false); 
-      }, 3000);
+      setIsSignUpActive(false); // Сразу переключаем на форму входа
     } catch (error) {
       if (error.response && error.response.data && error.response.data.message) {
         showMessage("error", error.response.data.message);
@@ -61,11 +94,9 @@ const AuthorizationSection = () => {
 
     try {
       const data = await loginUser({ email, password });
-      localStorage.setItem("token", data.token); 
+      localStorage.setItem("token", data.token);
       showMessage("success", data.message || "Авторизация успешна");
-      setTimeout(() => {
-        window.location.href = "/dashboard";
-      }, 3000);
+      navigate("/profile");
     } catch (error) {
       showMessage("error", error.message || "Ошибка авторизации");
     }
