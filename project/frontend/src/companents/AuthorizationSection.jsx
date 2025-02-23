@@ -8,19 +8,23 @@ const AuthorizationSection = () => {
   const [message, setMessage] = useState(null);
   const navigate = useNavigate();
 
+  // Функция для переключения между формами
   const togglePanel = () => {
     setIsSignUpActive(!isSignUpActive);
     clearMessage();
   };
 
-  const clearMessage = () => {
-    setMessage(null);
-  };
-
+  // Функция для отображения сообщений
   const showMessage = (type, content) => {
+    console.log(`Показываем сообщение: type=${type}, content=${content}`); // Логируем сообщение
     clearMessage();
     setMessage({ type, content });
-    setTimeout(clearMessage, 3000);
+    setTimeout(clearMessage, 3000); // Скрываем сообщение через 3 секунды
+  };
+
+  // Функция для очистки сообщений
+  const clearMessage = () => {
+    setMessage(null);
   };
 
   // Валидация логина (латиница)
@@ -41,6 +45,7 @@ const AuthorizationSection = () => {
     return regex.test(password);
   };
 
+  // Обработка отправки формы регистрации
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -49,39 +54,53 @@ const AuthorizationSection = () => {
     const username = form.username.value.trim();
     const email = form.email.value.trim();
     const password = form.password.value;
-
-    // Валидация имени и фамилии
+  
+    // Валидация данных
     if (!validateName(firstName) || !validateName(lastName)) {
-      return showMessage("error", "Имя и фамилия должны содержать только буквы (кириллица или латиница).");
+      return showMessage(
+        "error",
+        "Имя и фамилия должны содержать только буквы (кириллица или латиница)."
+      );
     }
-
-    // Валидация логина
     if (!validateLogin(username)) {
       return showMessage("error", "Логин должен содержать только латинские буквы и цифры.");
     }
-
-    // Валидация пароля
     if (!validatePassword(password)) {
-      return showMessage("error", "Пароль должен быть минимум 8 символов, содержать хотя бы одну цифру и одну заглавную букву.");
+      return showMessage(
+        "error",
+        "Пароль должен быть минимум 8 символов, содержать хотя бы одну цифру и одну заглавную букву."
+      );
     }
-
-    if (!firstName || !lastName || !username || !email || !password) {
-      return showMessage("error", "Пожалуйста, заполните все поля.");
-    }
-
+  
     try {
       const data = await registerUser({ firstName, lastName, username, email, password });
-      showMessage("success", data.message || "Регистрация успешна");
-      setIsSignUpActive(false); // Сразу переключаем на форму входа
+      showMessage("success", data.message || "Письмо с подтверждением отправлено на ваш email.");
+      setIsSignUpActive(false); // Переключение на форму входа
     } catch (error) {
-      if (error.response && error.response.data && error.response.data.message) {
-        showMessage("error", error.response.data.message);
-      } else {
-        showMessage("error", "Произошла ошибка при регистрации.");
+      console.error("Ошибка при регистрации:", error);
+      console.log("Ответ сервера:", error.response); // Логируем весь ответ сервера
+  
+      let errorMessage = "Произошла неизвестная ошибка. Пожалуйста, попробуйте позже.";
+  
+      // Если есть ответ от сервера
+      if (error.response) {
+        // Проверяем несколько возможных мест, где может быть сообщение об ошибке
+        if (error.response.data && error.response.data.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.response.message) {
+          errorMessage = error.response.message;
+        }
+      } else if (error.message) {
+        // Если ошибка пришла в поле message
+        errorMessage = error.message;
       }
+  
+      // Показываем сообщение пользователю
+      showMessage("error", errorMessage);
     }
   };
 
+  // Обработка отправки формы входа
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -98,7 +117,43 @@ const AuthorizationSection = () => {
       showMessage("success", data.message || "Авторизация успешна");
       navigate("/profile");
     } catch (error) {
-      showMessage("error", error.message || "Ошибка авторизации");
+      console.error("Ошибка при авторизации:", error);
+
+      let errorMessage = "Ошибка авторизации.";
+      if (error.response) {
+        // Если есть ответ от сервера
+        console.log("Ответ сервера:", error.response.data);
+
+        if (error.response.data && typeof error.response.data.message === "string") {
+          // Извлекаем сообщение из ответа сервера
+          errorMessage = error.response.data.message;
+
+          // Дополнительная обработка для более понятных сообщений
+          if (errorMessage.includes("email") || errorMessage.includes("password")) {
+            errorMessage =
+              "Неверный email или пароль. Пожалуйста, проверьте введенные данные.";
+          } else if (errorMessage.includes("confirmed")) {
+            errorMessage =
+              "Подтвердите ваш email для входа. Проверьте почту.";
+          }
+        } else {
+          // Если структура ответа некорректна
+          errorMessage =
+            "К сожалению, произошла ошибка на сервере. Пожалуйста, попробуйте позже.";
+        }
+      } else if (error.request) {
+        // Если запрос был сделан, но сервер не ответил
+        errorMessage =
+          "Не удалось связаться с сервером. Пожалуйста, проверьте подключение к интернету.";
+      } else {
+        // Если запрос даже не был отправлен (например, проблема с сетью)
+        errorMessage =
+          "Произошла неизвестная ошибка. Пожалуйста, попробуйте позже.";
+        console.error("Детали ошибки:", error.message);
+      }
+
+      // Показываем сообщение пользователю
+      showMessage("error", errorMessage);
     }
   };
 
@@ -106,7 +161,9 @@ const AuthorizationSection = () => {
     <div className="authorization-container">
       <div className="forms-container">
         {/* Форма регистрации */}
-        <div className={`form-wrapper form-signup ${isSignUpActive ? "active" : "inactive"}`}>
+        <div
+          className={`form-wrapper form-signup ${isSignUpActive ? "active" : "inactive"}`}
+        >
           <form className="auth-form" id="form1" onSubmit={handleRegisterSubmit}>
             <h2 className="form-title">Присоединяйтесь к нам</h2>
             <input
@@ -130,7 +187,13 @@ const AuthorizationSection = () => {
               className="auth-input"
               required
             />
-            <input type="email" name="email" placeholder="Email" className="auth-input" required />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              className="auth-input"
+              required
+            />
             <input
               type="password"
               name="password"
@@ -145,10 +208,18 @@ const AuthorizationSection = () => {
         </div>
 
         {/* Форма входа */}
-        <div className={`form-wrapper form-signin ${!isSignUpActive ? "active" : "inactive"}`}>
+        <div
+          className={`form-wrapper form-signin ${!isSignUpActive ? "active" : "inactive"}`}
+        >
           <form className="auth-form" id="form2" onSubmit={handleLoginSubmit}>
             <h2 className="form-title">Вход в систему</h2>
-            <input type="email" name="email" placeholder="Email" className="auth-input" required />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              className="auth-input"
+              required
+            />
             <input
               type="password"
               name="password"
@@ -167,7 +238,11 @@ const AuthorizationSection = () => {
       <div className="overlay-container">
         <div className="overlay overlay-left">
           <div className="overlay-panel">
-            <h1>{!isSignUpActive ? "Найдите идеального исполнителя!" : "Станьте частью команды!"}</h1>
+            <h1>
+              {!isSignUpActive
+                ? "Найдите идеального исполнителя!"
+                : "Станьте частью команды!"}
+            </h1>
             <p>
               {!isSignUpActive
                 ? "Опубликуйте свой проект и получите предложения от лучших фрилансеров."
@@ -180,7 +255,11 @@ const AuthorizationSection = () => {
         </div>
         <div className="overlay overlay-right">
           <div className="overlay-panel">
-            <h1>{!isSignUpActive ? "Станьте частью команды!" : "Найдите идеального исполнителя!"}</h1>
+            <h1>
+              {!isSignUpActive
+                ? "Станьте частью команды!"
+                : "Найдите идеального исполнителя!"}
+            </h1>
             <p>
               {!isSignUpActive
                 ? "Создайте аккаунт и начните зарабатывать на своих навыках."

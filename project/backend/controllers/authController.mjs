@@ -24,22 +24,18 @@ export const register = async (req, res) => {
   try {
     const { firstName, lastName, username, email, password } = req.body;
 
-    // Валидация имени и фамилии
+    // Валидация данных
     if (!validateName(firstName) || !validateName(lastName)) {
       return res.status(400).json({ message: "Имя и фамилия должны содержать только буквы (кириллица или латиница)." });
     }
-
-    // Валидация логина
     if (!validateLogin(username)) {
       return res.status(400).json({ message: "Логин должен содержать только латинские буквы и цифры." });
     }
-
-    // Валидация пароля
     if (!validatePassword(password)) {
       return res.status(400).json({ message: "Пароль должен быть минимум 8 символов, содержать хотя бы одну цифру и одну заглавную букву." });
     }
 
-    // Остальная логика регистрации
+    // Проверка существующего пользователя
     const existingUserByEmail = await User.findOne({ email });
     if (existingUserByEmail) {
       return res.status(400).json({ message: "Пользователь с таким email уже существует" });
@@ -50,7 +46,10 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: "Пользователь с таким логином уже существует" });
     }
 
+    // Хеширование пароля
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Создание нового пользователя
     const newUser = new User({
       firstName,
       lastName,
@@ -58,13 +57,18 @@ export const register = async (req, res) => {
       email,
       password: hashedPassword,
     });
+
+    // Сохранение пользователя в базе данных
     await newUser.save();
+
+    // Успешный ответ
     res.status(201).json({ message: "Регистрация успешна" });
   } catch (error) {
-    console.error("Registration error:", error);
+    console.error("Ошибка при регистрации:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
+
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;

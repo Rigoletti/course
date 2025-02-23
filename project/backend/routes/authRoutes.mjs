@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
-router.get("/profile", authMiddleware, getUserProfile); // Защищенный маршрут
+router.get("/profile", authMiddleware, getUserProfile); 
 
 export default router;
