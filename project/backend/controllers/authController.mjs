@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.mjs";
+import passport from "passport";
 
 // Валидация логина (латиница)
 const validateLogin = (username) => {
@@ -105,14 +106,44 @@ export const login = async (req, res) => {
   }
 };
 
-export const getUserProfile = async (req, res) => {
-  try {
-    const user = await User.findById(req.userId).select('-password'); // Исключаем пароль из ответа
-    if (!user) {
-      return res.status(404).json({ message: "Пользователь не найден" });
-    }
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ message: "Ошибка сервера" });
+export const getProfile = (req, res) => {
+  if (!req.user) {
+    return res.redirect("/login");
   }
+
+  res.json({
+    message: "Добро пожаловать в ваш профиль!",
+    user: {
+      id: req.user._id,
+      username: req.user.username,
+      email: req.user.email,
+      firstName: req.user.firstName,
+      lastName: req.user.lastName,
+    },
+  });
+};
+
+
+export const githubAuth = passport.authenticate("github", { scope: ["user:email"] });
+export const githubCallback = (req, res, next) => {
+  passport.authenticate("github", { failureRedirect: "/login" }, (err, user, info) => {
+    if (err) {
+      console.error("Ошибка при авторизации через GitHub:", err);
+      return res.redirect("/login");
+    }
+    if (!user) {
+      console.error("Пользователь не найден:", info);
+      return res.redirect("/login");
+    }
+
+    req.logIn(user, (err) => {
+      if (err) {
+        console.error("Ошибка при входе:", err);
+        return res.redirect("/login");
+      }
+
+      console.log("Пользователь авторизован:", user);
+      return res.redirect("http://localhost:5000/api/auth/profile");
+    });
+  })(req, res, next);
 };

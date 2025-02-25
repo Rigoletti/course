@@ -7,7 +7,9 @@ const AuthorizationSection = () => {
   const [isSignUpActive, setIsSignUpActive] = useState(false);
   const [message, setMessage] = useState(null);
   const navigate = useNavigate();
-
+  const handleGitHubLogin = () => {
+    window.location.href = "http://localhost:5000/api/auth/github";
+  };
   // Функция для переключения между формами
   const togglePanel = () => {
     setIsSignUpActive(!isSignUpActive);
@@ -230,6 +232,9 @@ const AuthorizationSection = () => {
             <button className="auth-btn" type="submit">
               Войти
             </button>
+            <button className="auth-btn github-btn" onClick={handleGitHubLogin}>
+  Войти через GitHub
+</button>
           </form>
         </div>
       </div>
