@@ -1,40 +1,21 @@
-// authRoutes.mjs
 import express from "express";
-import passport from "passport";
+import * as authController from "../controllers/authController.mjs";
+
 const router = express.Router();
 
-// Маршрут для перенаправления на GitHub
-router.get("/github", passport.authenticate("github", { scope: ["user:email"] }));
+// Регистрация
+router.post("/register", authController.register);
 
-// Маршрут для обработки callback от GitHub
-router.get(
-  "/github/callback",
-  passport.authenticate("github", { failureRedirect: "/login" }),
-  (req, res) => {
-    console.log("Пользователь авторизован:", req.user); // Логируем данные пользователя
-    res.redirect("http://localhost:5000/api/auth/profile"); // Перенаправляем на фронтенд
-  }
-);
+// Вход
+router.post("/login", authController.login);
 
-// Маршрут для отображения профиля
-router.get("/profile", (req, res) => {
-  console.log("Запрос на /profile"); // Логируем запрос
-  if (!req.user) {
-    console.log("Пользователь не авторизован"); // Логируем отсутствие авторизации
-    return res.redirect("/login");
-  }
+// Получение профиля
+router.get("/profile", authController.getProfile);
 
-  console.log("Данные пользователя:", req.user); // Логируем данные пользователя
-  res.json({
-    message: "Добро пожаловать в ваш профиль!",
-    user: {
-      id: req.user._id,
-      username: req.user.username,
-      email: req.user.email,
-      firstName: req.user.firstName,
-      lastName: req.user.lastName,
-    },
-  });
-});
+// GitHub Auth
+router.get("/github", authController.githubAuth);
+
+// GitHub Callback
+router.get("/github/callback", authController.githubCallback);
 
 export default router;

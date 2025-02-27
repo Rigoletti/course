@@ -8,6 +8,7 @@ import User from "./models/User.mjs";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import cors from "cors";
+import authRoutes from "./routes/authRoutes.mjs";
 
 dotenv.config();
 
@@ -27,7 +28,7 @@ app.use(
     secret: process.env.JWT_SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }, // Установите secure: true, если используете HTTPS
+    cookie: { secure: false }, 
   })
 );
 
@@ -45,22 +46,14 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       try {
         console.log("GitHub Profile:", profile); // Логируем профиль для отладки
-
-        // Проверяем, существует ли пользователь с таким GitHub ID
         let user = await User.findOne({ githubId: profile.id });
-
         if (!user) {
-          // Если пользователь не существует, создаем нового
           const displayName = profile.displayName || "Unknown User";
           const nameParts = displayName.split(" ");
-
           const email = profile.emails && profile.emails[0] ? profile.emails[0].value : "unknown@example.com";
           const username = profile.username || email.split("@")[0];
-
-          // Генерируем случайный пароль
           const randomPassword = Math.random().toString(36).slice(-8);
           const hashedPassword = await bcrypt.hash(randomPassword, 10);
-
           user = new User({
             githubId: profile.id,
             username,
@@ -69,10 +62,8 @@ passport.use(
             lastName: nameParts[1] || "",
             password: hashedPassword,
           });
-
           await user.save();
         }
-
         return done(null, user);
       } catch (error) {
         console.error("Ошибка при обработке профиля GitHub:", error);
@@ -110,15 +101,11 @@ app.get(
   passport.authenticate("github", { failureRedirect: "/login" }),
   (req, res) => {
     console.log("Пользователь авторизован:", req.user); // Логируем данные пользователя
-
-    // Генерация JWT токена
     const token = jwt.sign(
       { userId: req.user._id, role: req.user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
-
-    // Перенаправляем пользователя на фронтенд с токеном
     res.redirect(`http://localhost:5173/profile?token=${token}`);
   }
 );
@@ -126,19 +113,15 @@ app.get(
 // Маршрут для получения данных профиля
 app.get("/api/auth/profile", async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Получаем токен из заголовка
-
   if (!token) {
     return res.status(401).json({ message: "Нет доступа" });
   }
-
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET); // Проверяем токен
     const user = await User.findById(decoded.userId); // Находим пользователя по ID
-
     if (!user) {
       return res.status(404).json({ message: "Пользователь не найден" });
     }
-
     res.json({
       message: "Добро пожаловать в ваш профиль!",
       user: {
@@ -154,6 +137,10 @@ app.get("/api/auth/profile", async (req, res) => {
   }
 });
 
+// Используем маршруты из authRoutes
+app.use("/api/auth", authRoutes);
+
+// Запуск сервера
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
