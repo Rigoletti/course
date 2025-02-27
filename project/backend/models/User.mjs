@@ -5,9 +5,10 @@ const userSchema = new mongoose.Schema({
   lastName: { type: String, required: true, trim: true },
   username: { type: String, required: true, unique: true, trim: true },
   email: { type: String, required: true, unique: true, trim: true, lowercase: true },
-  password: { type: String, minlength: 6 }, 
+  password: { type: String, minlength: 6 },
   role: { type: String, enum: ["user", "admin"], default: "user" },
   githubId: { type: String, unique: true, sparse: true },
+  avatar: { type: String, default: "https://gravatar.com/avatar/default" }, 
 }, { timestamps: true });
 
 export default mongoose.model("User", userSchema);

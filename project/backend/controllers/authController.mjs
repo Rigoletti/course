@@ -106,23 +106,30 @@ export const login = async (req, res) => {
   }
 };
 
-export const getProfile = (req, res) => {
-  if (!req.user) {
-    return res.redirect("/login");
+export const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId); // Используем req.userId
+    if (!user) {
+      return res.status(404).json({ message: "Пользователь не найден" });
+    }
+
+    res.json({
+      message: "Добро пожаловать в ваш профиль!",
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        bio: user.bio,
+        avatar: user.avatar,
+      },
+    });
+  } catch (error) {
+    console.error("Ошибка при получении профиля:", error);
+    res.status(500).json({ message: "Ошибка сервера" });
   }
-
-  res.json({
-    message: "Добро пожаловать в ваш профиль!",
-    user: {
-      id: req.user._id,
-      username: req.user.username,
-      email: req.user.email,
-      firstName: req.user.firstName,
-      lastName: req.user.lastName,
-    },
-  });
 };
-
 
 export const githubAuth = passport.authenticate("github", { scope: ["user:email"] });
 export const githubCallback = (req, res, next) => {
@@ -146,4 +153,40 @@ export const githubCallback = (req, res, next) => {
       return res.redirect("http://localhost:5000/api/auth/profile");
     });
   })(req, res, next);
+};
+
+export const updateProfile = async (req, res) => {
+  const { firstName, lastName, bio, avatar } = req.body;
+  const userId = req.userId; // Используем req.userId
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Пользователь не найден" });
+    }
+
+    // Обновляем данные
+    user.firstName = firstName || user.firstName;
+    user.lastName = lastName || user.lastName;
+    user.bio = bio || user.bio;
+    user.avatar = avatar || user.avatar;
+
+    // Сохраняем обновленные данные
+    await user.save();
+
+    // Возвращаем обновленного пользователя
+    res.status(200).json({
+      message: "Профиль успешно обновлен",
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        bio: user.bio,
+        avatar: user.avatar,
+      },
+    });
+  } catch (error) {
+    console.error("Ошибка при обновлении профиля:", error);
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
 };
