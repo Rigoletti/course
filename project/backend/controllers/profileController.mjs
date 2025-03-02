@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.mjs";
+import multer from "multer";
+const upload = multer();
 
 // Получение профиля
 export const getProfile = async (req, res) => {
@@ -23,7 +25,9 @@ export const getProfile = async (req, res) => {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        avatar: user.avatar, // Добавляем аватарку
+        avatar: user.avatar,
+        bio: user.bio,
+        createdAt: user.createdAt, 
       },
     });
   } catch (error) {
@@ -40,11 +44,12 @@ export const updateProfile = async (req, res) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const { firstName, lastName, email } = req.body;
+    const { firstName, lastName, bio } = req.body;
 
+    // Обновляем данные пользователя
     const user = await User.findByIdAndUpdate(
       decoded.userId,
-      { firstName, lastName, email },
+      { firstName, lastName, bio },
       { new: true }
     ).select("-password");
 
@@ -60,7 +65,6 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
-
 // Загрузка аватарки
 export const uploadAvatar = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -76,9 +80,10 @@ export const uploadAvatar = async (req, res) => {
       return res.status(404).json({ message: "Пользователь не найден" });
     }
 
-    // Предполагаем, что файл загружен через multer и доступен в req.file
+    console.log("Загруженный файл:", req.file); // Логируем загруженный файл
+
     if (req.file) {
-      user.avatar = `http://localhost:5000/uploads/${req.file.filename}`; // Сохраняем полный URL
+      user.avatar = `http://localhost:5000/uploads/${req.file.filename}`;
       await user.save();
     }
 
@@ -87,6 +92,7 @@ export const uploadAvatar = async (req, res) => {
       avatar: user.avatar,
     });
   } catch (error) {
+    console.error("Ошибка при загрузке аватарки:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };

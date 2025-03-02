@@ -8,7 +8,12 @@ const userSchema = new mongoose.Schema({
   password: { type: String, minlength: 6 },
   role: { type: String, enum: ["user", "admin"], default: "user" },
   githubId: { type: String, unique: true, sparse: true },
-  avatar: { type: String, default: "" }, 
+  avatar: { type: String, default: "" },
+  bio: { type: String, default: "" }, 
+  balance: { type: Number, default: 0 },
+  completedOrders: { type: Number, default: 0 },
+  rating: { type: Number, default: 0 },
+  reviews: [{ type: String }],
 }, { timestamps: true });
 
 export default mongoose.model("User", userSchema);

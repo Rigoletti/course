@@ -121,3 +121,32 @@ export const getProfile = (req, res) => {
     },
   });
 };
+
+export const updateBalance = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Нет доступа" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { balance } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      decoded.userId,
+      { balance },
+      { new: true }
+    ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "Пользователь не найден" });
+    }
+
+    res.json({
+      message: "Баланс обновлен",
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
