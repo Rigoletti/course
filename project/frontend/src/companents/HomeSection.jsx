@@ -1,5 +1,6 @@
 import React from "react";
 import "../style/HomeSection.css";
+import { Link } from "react-router-dom"; 
 
 const HomeSection = () => {
   return (
@@ -15,16 +16,15 @@ const HomeSection = () => {
               <div className="content">
                 <div 
                   className="icon" 
-                  style={{ backgroundImage: `url(https://via.placeholder.com/150/FF6347/FFFFFF?text=Web)` }}
+                  style={{ backgroundImage: `url(https://habrastorage.org/files/a6e/c1a/94e/a6ec1a94efda4f43a8798360835a71b4.jpg)` }}
                 >
-                  <i className="fa fa-code" aria-hidden="true"></i>
                 </div>
               </div>
             </div>
             <div className="face face2">
               <div className="content">
                 <h3>
-                  <a href="#web-development" target="_blank">Веб-разработка</a>
+                  <Link to="/web">Веб-разработка</Link> 
                 </h3>
                 <p>Создание современных и адаптивных веб-сайтов и приложений.</p>
               </div>
@@ -36,16 +36,15 @@ const HomeSection = () => {
               <div className="content">
                 <div 
                   className="icon" 
-                  style={{ backgroundImage: `url(https://via.placeholder.com/150/6495ED/FFFFFF?text=Mobile)` }}
+                  style={{ backgroundImage: `url(https://avatars.dzeninfra.ru/get-zen_doc/271828/pub_65992d9339c6e24c8b83d409_65993605c767be610de8e11a/scale_1200)` }}
                 >
-                  <i className="fa fa-mobile" aria-hidden="true"></i>
                 </div>
               </div>
             </div>
             <div className="face face2">
               <div className="content">
                 <h3>
-                  <a href="#mobile-development" target="_blank">Мобильная разработка</a>
+                  <Link to="/mobile-development">Мобильная разработка</Link>
                 </h3>
                 <p>Разработка мобильных приложений для iOS и Android.</p>
               </div>
@@ -57,16 +56,15 @@ const HomeSection = () => {
               <div className="content">
                 <div 
                   className="icon" 
-                  style={{ backgroundImage: `url(https://via.placeholder.com/150/00CED1/FFFFFF?text=Cloud)` }}
+                  style={{ backgroundImage: `url(https://avatars.mds.yandex.net/i?id=00103a8fd78871ddb7aef12bd0cc553c_l-10754985-images-thumbs&n=13)` }}
                 >
-                  <i className="fa fa-cloud" aria-hidden="true"></i>
                 </div>
               </div>
             </div>
             <div className="face face2">
               <div className="content">
                 <h3>
-                  <a href="#cloud-solutions" target="_blank">Облачные решения</a>
+                  <Link to="/cloud-solutions">Облачные решения</Link> 
                 </h3>
                 <p>Интеграция и управление облачными сервисами и инфраструктурой.</p>
               </div>
@@ -78,16 +76,15 @@ const HomeSection = () => {
               <div className="content">
                 <div 
                   className="icon" 
-                  style={{ backgroundImage: `url(https://via.placeholder.com/150/FFD700/FFFFFF?text=SEO)` }}
+                  style={{ backgroundImage: `url(https://avatars.mds.yandex.net/i?id=8a821fe7e4c3f88e10977dcd444e5e38_l-5220668-images-thumbs&n=13)` }}
                 >
-                  <i className="fa fa-line-chart" aria-hidden="true"></i>
                 </div>
               </div>
             </div>
             <div className="face face2">
               <div className="content">
                 <h3>
-                  <a href="#seo" target="_blank">SEO-продвижение</a>
+                  <Link to="/seo">SEO-продвижение</Link>
                 </h3>
                 <p>Увеличение видимости вашего сайта в поисковых системах.</p>
               </div>
@@ -99,16 +96,15 @@ const HomeSection = () => {
               <div className="content">
                 <div 
                   className="icon" 
-                  style={{ backgroundImage: `url(https://via.placeholder.com/150/EE82EE/FFFFFF?text=Marketing)` }}
+                  style={{ backgroundImage: `url(https://avatars.mds.yandex.net/i?id=8537022540809bc8ad32f603131926f7_l-9193117-images-thumbs&n=13)` }}
                 >
-                  <i className="fa fa-bullhorn" aria-hidden="true"></i>
                 </div>
               </div>
             </div>
             <div className="face face2">
               <div className="content">
                 <h3>
-                  <a href="#digital-marketing" target="_blank">Цифровой маркетинг</a>
+                  <Link to="/digital-marketing">Цифровой маркетинг</Link> 
                 </h3>
                 <p>Привлечение целевой аудитории через онлайн-каналы.</p>
               </div>
@@ -120,16 +116,15 @@ const HomeSection = () => {
               <div className="content">
                 <div 
                   className="icon" 
-                  style={{ backgroundImage: `url(https://via.placeholder.com/150/FF69B4/FFFFFF?text=Security)` }}
+                  style={{ backgroundImage: `url(https://avatars.mds.yandex.net/i?id=5d1d3ec9b864abe0600f83710b47ee92ab8795e6-10782253-images-thumbs&n=13)` }}
                 >
-                  <i className="fa fa-shield" aria-hidden="true"></i>
                 </div>
               </div>
             </div>
             <div className="face face2">
               <div className="content">
                 <h3>
-                  <a href="#cybersecurity" target="_blank">Кибербезопасность</a>
+                  <Link to="/cybersecurity">Кибербезопасность</Link> 
                 </h3>
                 <p>Защита ваших данных от кибератак и угроз.</p>
               </div>
@@ -141,16 +136,15 @@ const HomeSection = () => {
               <div className="content">
                 <div 
                   className="icon" 
-                  style={{ backgroundImage: `url(https://via.placeholder.com/150/00BFFF/FFFFFF?text=Data)` }}
+                  style={{ backgroundImage: `url(https://avatars.mds.yandex.net/i?id=4bc6e50f125d799041755bc4edf17d22_l-5281542-images-thumbs&n=13)` }}
                 >
-                  <i className="fa fa-bar-chart" aria-hidden="true"></i>
                 </div>
               </div>
             </div>
             <div className="face face2">
               <div className="content">
                 <h3>
-                  <a href="#data-analytics" target="_blank">Аналитика данных</a>
+                  <Link to="/data-analytics">Аналитика данных</Link>
                 </h3>
                 <p>Превращение данных в осмысленные решения для бизнеса.</p>
               </div>
@@ -162,16 +156,15 @@ const HomeSection = () => {
               <div className="content">
                 <div 
                   className="icon" 
-                  style={{ backgroundImage: `url(https://via.placeholder.com/150/32CD32/FFFFFF?text=Consulting)` }}
+                  style={{ backgroundImage: `url(https://avatars.mds.yandex.net/i?id=7c6a29aaec69b21add93ab44c2c2ad5a_l-12536664-images-thumbs&n=13)` }}
                 >
-                  <i className="fa fa-lightbulb-o" aria-hidden="true"></i>
                 </div>
               </div>
             </div>
             <div className="face face2">
               <div className="content">
                 <h3>
-                  <a href="#consulting" target="_blank">Бизнес-консалтинг</a>
+                  <Link to="/consulting">Бизнес-консалтинг</Link> 
                 </h3>
                 <p>Стратегические решения для роста вашего бизнеса.</p>
               </div>
