@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaWallet, FaTasks, FaStar, FaEdit } from "react-icons/fa";
+import { FaWallet, FaTasks, FaStar, FaEdit, FaUpload } from "react-icons/fa";
 import "../style/ProfileSection.css";
 
 const ProfileSection = () => {
@@ -128,7 +128,7 @@ const ProfileSection = () => {
     }
   };
 
-  // Обработчик для перетаскивания файла
+  // Обработчики для drag-and-drop
   const handleDragOver = (e) => {
     e.preventDefault();
     setIsDragging(true);
@@ -195,17 +195,15 @@ const ProfileSection = () => {
             alt="Аватарка"
           />
           {isEditing && (
-            <div className="avatar-upload">
-              <label htmlFor="avatar-upload" className="upload-label">
-                Выберите файл
-              </label>
+            <label className="avatar-upload">
+              <FaUpload className="upload-icon" />
               <input
-                id="avatar-upload"
                 type="file"
                 accept="image/*"
                 onChange={handleAvatarChange}
+                style={{ display: "none" }}
               />
-            </div>
+            </label>
           )}
         </div>
         <div className="profile-info">

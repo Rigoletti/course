@@ -3,6 +3,9 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Authorization from './pages/Authorization';
 import Profile from './pages/Profile';
+import Executor from './pages/Executor';
+
+// services
 import Web from './pages/servises/web';
 import Mob from './pages/servises/mob'
 import Cloud from './pages/servises/cloud'
@@ -20,6 +23,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path='/authorization' element={<Authorization />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/executor" element={<Executor />} />
         {/* servises */}
         <Route path="/web" element={<Web />} />
         <Route path="/mobile-development" element={<Mob />} />
