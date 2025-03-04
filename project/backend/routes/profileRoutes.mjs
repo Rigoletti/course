@@ -1,20 +1,21 @@
 import express from "express";
-import { getProfile, updateProfile, uploadAvatar } from "../controllers/profileController.mjs";
+import { getProfile, updateProfile, uploadAvatar, updateBalance } from "../controllers/profileController.mjs";
 import multerConfig from "../config/multerConfig.mjs";
-import multer from "multer"; // Импортируем multer
+import multer from "multer";
 
 const router = express.Router();
-
-// Создаем middleware для обработки текстовых данных
 const upload = multer();
 
 // Получение профиля
 router.get("/profile", getProfile);
 
 // Обновление данных профиля
-router.put("/profile", upload.none(), updateProfile); // Используем upload.none() для текстовых данных
+router.put("/profile", upload.none(), updateProfile);
 
 // Загрузка аватарки
 router.post("/upload-avatar", multerConfig.single("avatar"), uploadAvatar);
+
+// Обновление баланса
+router.put("/update-balance", updateBalance);
 
 export default router;

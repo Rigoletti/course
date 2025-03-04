@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.mjs";
 import multer from "multer";
+
 const upload = multer();
 
 // Получение профиля
@@ -26,7 +27,7 @@ export const getProfile = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         avatar: user.avatar,
-        bio: user.bio,
+        bio: user.bio, 
         createdAt: user.createdAt, 
       },
     });
@@ -34,7 +35,6 @@ export const getProfile = async (req, res) => {
     res.status(401).json({ message: "Нет доступа" });
   }
 };
-
 // Обновление данных профиля
 export const updateProfile = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -46,7 +46,6 @@ export const updateProfile = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const { firstName, lastName, bio } = req.body;
 
-    // Обновляем данные пользователя
     const user = await User.findByIdAndUpdate(
       decoded.userId,
       { firstName, lastName, bio },
@@ -65,6 +64,7 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
+
 // Загрузка аватарки
 export const uploadAvatar = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -82,10 +82,13 @@ export const uploadAvatar = async (req, res) => {
 
     console.log("Загруженный файл:", req.file); // Логируем загруженный файл
 
-    if (req.file) {
-      user.avatar = `http://localhost:5000/uploads/${req.file.filename}`;
-      await user.save();
+    if (!req.file) {
+      return res.status(400).json({ message: "Файл не был загружен" });
     }
+
+    // Обновляем аватар пользователя
+    user.avatar = `http://localhost:5000/uploads/${req.file.filename}`;
+    await user.save();
 
     res.json({
       message: "Аватарка успешно загружена",
@@ -93,6 +96,36 @@ export const uploadAvatar = async (req, res) => {
     });
   } catch (error) {
     console.error("Ошибка при загрузке аватарки:", error);
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
+// Обновление баланса
+export const updateBalance = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Нет доступа" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { balance } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      decoded.userId,
+      { balance },
+      { new: true }
+    ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "Пользователь не найден" });
+    }
+
+    res.json({
+      message: "Баланс обновлен",
+      user,
+    });
+  } catch (error) {
+    console.error("Ошибка при обновлении баланса:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };

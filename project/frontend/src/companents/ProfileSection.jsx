@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../style/Profile.css"; // Убедитесь, что путь к стилям правильный
+import { FaWallet, FaTasks, FaStar, FaEdit } from "react-icons/fa";
+import "../style/ProfileSection.css";
 
 const ProfileSection = () => {
   const [user, setUser] = useState(null);
@@ -10,19 +11,19 @@ const ProfileSection = () => {
     firstName: "",
     lastName: "",
     bio: "",
-    avatar: "",
+    avatar: null,
   });
+  const [previewAvatar, setPreviewAvatar] = useState(null);
+  const [isDragging, setIsDragging] = useState(false); // Состояние для отслеживания перетаскивания
   const navigate = useNavigate();
-  const location = useLocation();
 
-  // Загрузка данных профиля
   useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
+    const queryParams = new URLSearchParams(window.location.search);
     const token = queryParams.get("token");
 
     if (token) {
       localStorage.setItem("token", token);
-      navigate("/profile", { replace: true });
+      window.history.replaceState({}, document.title, "/profile");
     }
 
     const fetchProfile = async () => {
@@ -40,52 +41,74 @@ const ProfileSection = () => {
         });
         setUser(response.data.user);
         setFormData({
-          firstName: response.data.user.firstName,
-          lastName: response.data.user.lastName,
+          firstName: response.data.user.firstName || "",
+          lastName: response.data.user.lastName || "",
           bio: response.data.user.bio || "",
-          avatar: response.data.user.avatar || "https://gravatar.com/avatar/default",
+          avatar: null,
         });
+        setPreviewAvatar(response.data.user.avatar || null);
       } catch (error) {
         console.error("Ошибка при получении профиля:", error);
-        navigate("/authorization");
+        if (error.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/authorization");
+        }
       }
     };
 
     fetchProfile();
-  }, [navigate, location]);
+  }, [navigate]);
 
-  // Выход из профиля
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/");
+    navigate("/authorization");
   };
 
-  // Переключение режима редактирования
   const handleEditClick = () => {
-    setIsEditing(!isEditing); // Переключаем режим редактирования
+    setIsEditing(!isEditing);
   };
 
-  // Сохранение изменений
   const handleSaveClick = async () => {
     const token = localStorage.getItem("token");
+    const { firstName, lastName, bio, avatar } = formData;
+
     try {
+      // Обновление профиля
       const response = await axios.put(
         "http://localhost:5000/api/auth/profile",
-        formData,
+        { firstName, lastName, bio },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      setUser(response.data.user); // Обновляем данные пользователя
-      setIsEditing(false); // Выходим из режима редактирования
+      setUser(response.data.user);
+
+      // Загрузка аватарки, если она была выбрана
+      if (avatar) {
+        const formDataToSend = new FormData();
+        formDataToSend.append("avatar", avatar);
+
+        const uploadResponse = await axios.post(
+          "http://localhost:5000/api/auth/upload-avatar",
+          formDataToSend,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        setUser((prevUser) => ({ ...prevUser, avatar: uploadResponse.data.avatar }));
+      }
+
+      setIsEditing(false);
     } catch (error) {
       console.error("Ошибка при обновлении профиля:", error);
     }
   };
 
-  // Обработка изменений в форме
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -94,155 +117,171 @@ const ProfileSection = () => {
     }));
   };
 
-  // Если данные пользователя еще не загружены
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prevData) => ({
+        ...prevData,
+        avatar: file,
+      }));
+      setPreviewAvatar(URL.createObjectURL(file));
+    }
+  };
+
+  // Обработчик для перетаскивания файла
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setFormData((prevData) => ({
+        ...prevData,
+        avatar: file,
+      }));
+      setPreviewAvatar(URL.createObjectURL(file));
+    } else {
+      alert("Пожалуйста, выберите изображение.");
+    }
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return "Дата не указана";
+    }
+    return date.toLocaleDateString("ru-RU", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return "Время не указано";
+    }
+    return date.toLocaleTimeString("ru-RU", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   if (!user) {
     return <div>Загрузка...</div>;
   }
 
   return (
-    <div className="container">
-      <div className="row profile">
-        {/* Боковая панель */}
-        <div className="col-md-3">
-          <div className="profile-sidebar">
-            {/* Аватарка */}
-            <div className="profile-userpic">
-              <img
-                src={user.avatar || "https://gravatar.com/avatar/default"}
-                className="img-responsive"
-                alt={user.firstName}
-                style={{ display: "block", margin: "0 auto" }}
+    <div className="profile-container">
+      <div className="profile-header">
+        <div
+          className={`profile-avatar ${isDragging ? "dragging" : ""}`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
+          <img
+            src={previewAvatar || "https://avatars.mds.yandex.net/i?id=d9716aec8b7a04c4bc5c30cdf79abf58_l-5467951-images-thumbs&n=13"}
+            alt="Аватарка"
+          />
+          {isEditing && (
+            <div className="avatar-upload">
+              <label htmlFor="avatar-upload" className="upload-label">
+                Выберите файл
+              </label>
+              <input
+                id="avatar-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
               />
             </div>
-
-            {/* Имя и роль */}
-            <div className="profile-usertitle">
-              <div className="profile-usertitle-name">
-                {user.firstName} {user.lastName}
-              </div>
-              <div className="profile-usertitle-job">{user.role}</div>
-            </div>
-
-            {/* Кнопки */}
-            <div className="profile-userbuttons">
-              <button
-                type="button"
-                className="btn btn-success btn-sm"
-                onClick={handleEditClick}
-              >
-                {isEditing ? "Отмена" : "Редактировать"}
-              </button>
-              <button
-                type="button"
-                className="btn btn-danger btn-sm"
-                onClick={handleLogout}
-              >
-                Выйти
-              </button>
-            </div>
-
-            {/* Статистика */}
-            <div className="portlet light bordered">
-              <div className="row list-separated profile-stat">
-                <div className="col-md-4 col-sm-4 col-xs-6">
-                  <div className="uppercase profile-stat-title">37</div>
-                  <div className="uppercase profile-stat-text">Проекты</div>
-                </div>
-                <div className="col-md-4 col-sm-4 col-xs-6">
-                  <div className="uppercase profile-stat-title">51</div>
-                  <div className="uppercase profile-stat-text">Задачи</div>
-                </div>
-                <div className="col-md-4 col-sm-4 col-xs-6">
-                  <div className="uppercase profile-stat-title">61</div>
-                  <div className="uppercase profile-stat-text">Загрузки</div>
-                </div>
-              </div>
-
-              {/* Описание */}
-              <div>
-                <h4 className="profile-desc-title">
-                  О {user.firstName} {user.lastName}
-                </h4>
-                <span className="profile-desc-text">
-                  {user.bio || "Нет информации о себе."}
-                </span>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
-
-        {/* Основной контент */}
-        <div className="col-md-9">
-          <div className="profile-content">
-            {isEditing ? (
-              // Форма редактирования
-              <div className="edit-form">
-                <h2>Редактировать профиль</h2>
-                <form>
-                  {/* Имя */}
-                  <div className="form-group">
-                    <label>Имя:</label>
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  {/* Фамилия */}
-                  <div className="form-group">
-                    <label>Фамилия:</label>
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  {/* О себе */}
-                  <div className="form-group">
-                    <label>О себе:</label>
-                    <textarea
-                      name="bio"
-                      value={formData.bio}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  {/* Аватарка */}
-                  <div className="form-group">
-                    <label>Аватарка (URL):</label>
-                    <input
-                      type="text"
-                      name="avatar"
-                      value={formData.avatar}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  {/* Кнопка сохранения */}
-                  <div className="form-group">
-                    <button
-                      type="button"
-                      className="btn btn-primary"
-                      onClick={handleSaveClick}
-                    >
-                      Сохранить
-                    </button>
-                  </div>
-                </form>
-              </div>
-            ) : (
-              // Режим просмотра
-              <div>
-                <h2>Контент пользователя</h2>
-                <p>Здесь будет контент, связанный с пользователем...</p>
-              </div>
-            )}
-          </div>
+        <div className="profile-info">
+          {isEditing ? (
+            <>
+              <input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                placeholder="Имя"
+                className="edit-input"
+              />
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                placeholder="Фамилия"
+                className="edit-input"
+              />
+            </>
+          ) : (
+            <>
+              <h1>{user.firstName} {user.lastName}</h1>
+            </>
+          )}
+          <p className="profile-location">
+            {user.location || "Локация не указана"} • {formatTime(new Date())}
+          </p>
+          <p className="profile-joined">
+            Присоединился {formatDate(user.createdAt)}
+          </p>
         </div>
+      </div>
+
+      <div className="profile-description">
+        <h2>О себе</h2>
+        {isEditing ? (
+          <textarea
+            name="bio"
+            value={formData.bio}
+            onChange={handleChange}
+            placeholder="Расскажите о себе..."
+            className="edit-textarea"
+          />
+        ) : (
+          <p>{user.bio || "Нет информации о себе."}</p>
+        )}
+      </div>
+
+      <div className="profile-stats">
+        <div className="stat-item">
+          <FaWallet className="stat-icon" />
+          <span className="stat-value">{user.balance || 0}</span>
+          <span className="stat-label">Баланс</span>
+        </div>
+        <div className="stat-item">
+          <FaTasks className="stat-icon" />
+          <span className="stat-value">{user.completedOrders || 0}</span>
+          <span className="stat-label">Заказы</span>
+        </div>
+        <div className="stat-item">
+          <FaStar className="stat-icon" />
+          <span className="stat-value">{user.rating || 0}</span>
+          <span className="stat-label">Рейтинг</span>
+        </div>
+      </div>
+
+      <div className="profile-actions">
+        <button className="edit-button" onClick={isEditing ? handleSaveClick : handleEditClick}>
+          <FaEdit /> {isEditing ? "Сохранить" : "Редактировать"}
+        </button>
+        <button className="logout-button" onClick={handleLogout}>
+          Выйти
+        </button>
       </div>
     </div>
   );

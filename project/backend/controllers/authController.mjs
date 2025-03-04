@@ -38,12 +38,12 @@ export const register = async (req, res) => {
     // Проверка существующего пользователя
     const existingUserByEmail = await User.findOne({ email });
     if (existingUserByEmail) {
-      return res.status(400).json({ message: "Пользователь с таким email уже существует" });
+      return res.status(400).json({ message: "Пользователь с таким email уже существует." });
     }
 
     const existingUserByUsername = await User.findOne({ username });
     if (existingUserByUsername) {
-      return res.status(400).json({ message: "Пользователь с таким логином уже существует" });
+      return res.status(400).json({ message: "Пользователь с таким логином уже существует." });
     }
 
     // Хеширование пароля
@@ -62,10 +62,10 @@ export const register = async (req, res) => {
     await newUser.save();
 
     // Успешный ответ
-    res.status(201).json({ message: "Регистрация успешна" });
+    res.status(201).json({ message: "Регистрация успешна." });
   } catch (error) {
     console.error("Ошибка при регистрации:", error);
-    res.status(500).json({ message: "Ошибка сервера" });
+    res.status(500).json({ message: "Произошла ошибка при регистрации. Пожалуйста, попробуйте позже." });
   }
 };
 
@@ -75,19 +75,19 @@ export const login = async (req, res) => {
 
     // Проверяем, что email и password переданы
     if (!email || !password) {
-      return res.status(400).json({ message: "Email и пароль обязательны" });
+      return res.status(400).json({ message: "Email и пароль обязательны." });
     }
 
     // Ищем пользователя по email
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: "Неверный email или пароль" });
+      return res.status(400).json({ message: "Пользователь с таким email не найден." });
     }
 
     // Сравниваем пароль
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(400).json({ message: "Неверный email или пароль" });
+      return res.status(400).json({ message: "Неверный пароль." });
     }
 
     // Создаем JWT токен
@@ -98,55 +98,10 @@ export const login = async (req, res) => {
     );
 
     // Отправляем успешный ответ
-    res.status(200).json({ message: "Авторизация успешна", token });
+    res.status(200).json({ message: "Авторизация успешна.", token });
   } catch (error) {
     console.error("Ошибка при входе:", error);
-    res.status(500).json({ message: "Ошибка сервера" });
+    res.status(500).json({ message: "Произошла ошибка при входе. Пожалуйста, попробуйте позже." });
   }
 };
 
-export const getProfile = (req, res) => {
-  if (!req.user) {
-    return res.redirect("/login");
-  }
-
-  res.json({
-    message: "Добро пожаловать в ваш профиль!",
-    user: {
-      id: req.user._id,
-      username: req.user.username,
-      email: req.user.email,
-      firstName: req.user.firstName,
-      lastName: req.user.lastName,
-    },
-  });
-};
-
-export const updateBalance = async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) {
-    return res.status(401).json({ message: "Нет доступа" });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const { balance } = req.body;
-
-    const user = await User.findByIdAndUpdate(
-      decoded.userId,
-      { balance },
-      { new: true }
-    ).select("-password");
-
-    if (!user) {
-      return res.status(404).json({ message: "Пользователь не найден" });
-    }
-
-    res.json({
-      message: "Баланс обновлен",
-      user,
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Ошибка сервера" });
-  }
-};

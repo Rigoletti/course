@@ -1,7 +1,6 @@
 import multer from "multer";
 import path from "path";
 
-// Настройка хранилища для файлов
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/"); // Папка для сохранения файлов
@@ -11,9 +10,8 @@ const storage = multer.diskStorage({
   },
 });
 
-// Фильтр для проверки типа файла
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+  const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
