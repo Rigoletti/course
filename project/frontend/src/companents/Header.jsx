@@ -49,7 +49,7 @@ const Header = () => {
           <ul className="navbar-nav">
             <li className="nav-item">
               <Link to="/executor" className="nav-link literata-font">
-                Найти исполнителя
+              Подать заявку
               </Link>
             </li>
       
