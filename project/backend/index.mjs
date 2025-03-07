@@ -1,3 +1,4 @@
+// index.mjs
 import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./config/db_connect.mjs";
@@ -10,6 +11,7 @@ import profileRoutes from "./routes/profileRoutes.mjs";
 import githubRoutes from "./routes/githubRoutes.mjs";
 import multerConfig from "./config/multerConfig.mjs";
 import { uploadAvatar } from "./controllers/profileController.mjs";
+import categoryRoutes from "./routes/categoryRoutes.mjs"; // Импортируем маршруты для категорий
 import path from "path";
 import fs from "fs";
 
@@ -43,6 +45,7 @@ app.use(passport.session());
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", profileRoutes);
 app.use("/api/auth", githubRoutes);
+app.use("/api/categories", categoryRoutes); 
 
 // Маршрут для загрузки аватарки
 app.post("/api/auth/upload-avatar", multerConfig.single("avatar"), uploadAvatar);

@@ -48,7 +48,7 @@ const Header = () => {
           {/* Основные ссылки (ближе к логотипу) */}
           <ul className="navbar-nav">
             <li className="nav-item">
-              <Link to="/executor" className="nav-link literata-font">
+              <Link to="/category" className="nav-link literata-font">
               Подать заявку
               </Link>
             </li>
