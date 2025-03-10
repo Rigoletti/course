@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../../companents/Header";
+import Header from "../../companents/layout/Header";
 import Cybersecurity_companent from "../../companents/services/cybersecurity_companent";
 
 const seo=()=>{

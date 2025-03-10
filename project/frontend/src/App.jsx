@@ -1,9 +1,9 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import Authorization from './pages/Authorization';
-import Profile from './pages/Profile';
-import Category from './pages/Category';
+import Home from './pages/home/Home';
+import Authorization from './pages/auth/Authorization';
+import Profile from './pages/profile/Profile';
+import Category from './pages/category/Category';
 
 // services
 import Web from './pages/servises/web';

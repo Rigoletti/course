@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../../companents/Header";
+import Header from "../../companents/layout/Header";
 import Digital_marketing from "../../companents/services/digital_marketing";
 
 const seo=()=>{

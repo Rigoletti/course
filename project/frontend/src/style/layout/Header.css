@@ -1,0 +1,34 @@
+.literata-font {
+  font-family: 'Roboto', serif;
+}
+
+.header {
+  font-family: 'Roboto', serif;
+}
+
+/* Стили для выпадающего меню */
+.dropdown-menu {
+  background-color: #1e1e1e;
+  border: none;
+  z-index: 1000;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-menu .dropdown-item {
+  color: #000000; 
+  font-size: 16px;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Отключение эффекта при нажатии (для :active) */
+.dropdown-menu .dropdown-item:active {
+  background-color: transparent; /* Без изменения фона */
+  color: #000000; 
+  box-shadow: none; 
+}
+
+.dropdown-menu .dropdown-item:hover {
+  background-color: #4362b2; 
+  color: #ffffff; 
+}

@@ -2,16 +2,15 @@ import React, { useState } from "react";
 
 const WebDev = () => {
   const [orders, setOrders] = useState([
-    { id: 1, title: "Разработка сайта", budget: 1000, skills: ["React", "Node.js"], languages: ["JavaScript"], location: "Москва", date: "2023-10-01" },
-    { id: 2, title: "Создание лендинга", budget: 500, skills: ["HTML", "CSS"], languages: ["JavaScript"], location: "Санкт-Петербург", date: "2023-09-15" },
-    { id: 3, title: "Разработка API", budget: 1500, skills: ["Python", "Django"], languages: ["Python"], location: "Новосибирск", date: "2023-10-10" },
+    { id: 1, title: "Разработка сайта", budget: 1000, skills: ["React", "Node.js"], location: "Москва", date: "05.11.2024" },
+    { id: 2, title: "Создание лендинга", budget: 500, skills: ["HTML", "CSS", "JS"], location: "Санкт-Петербург", date: "23.03.2025" },
+    { id: 3, title: "Разработка API", budget: 1500, skills: ["Python", "Django"], location: "Новосибирск", date: "10.10.2024" },
   ]);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
   const [budgetFilter, setBudgetFilter] = useState("");
   const [skillsFilter, setSkillsFilter] = useState("");
-  const [languagesFilter, setLanguagesFilter] = useState("");
   const [sortByDate, setSortByDate] = useState("newest");
 
   const filteredOrders = orders
@@ -19,7 +18,6 @@ const WebDev = () => {
     .filter(order => locationFilter ? order.location.toLowerCase().includes(locationFilter.toLowerCase()) : true)
     .filter(order => budgetFilter ? order.budget <= parseInt(budgetFilter) : true)
     .filter(order => skillsFilter ? order.skills.some(skill => skill.toLowerCase().includes(skillsFilter.toLowerCase())) : true)
-    .filter(order => languagesFilter ? order.languages.some(language => language.toLowerCase().includes(languagesFilter.toLowerCase())) : true)
     .sort((a, b) => sortByDate === "newest" ? new Date(b.date) - new Date(a.date) : new Date(a.date) - new Date(b.date));
 
   return (
@@ -73,17 +71,6 @@ const WebDev = () => {
           </div>
 
           <div style={{ marginBottom: "15px" }}>
-            <label>Языки:</label>
-            <input
-              type="text"
-              placeholder="Языки программирования"
-              value={languagesFilter}
-              onChange={(e) => setLanguagesFilter(e.target.value)}
-              style={{ width: "100%", padding: "5px" }}
-            />
-          </div>
-
-          <div style={{ marginBottom: "15px" }}>
             <label>Сортировка по дате:</label>
             <select
               value={sortByDate}
@@ -112,7 +99,6 @@ const WebDev = () => {
               <h4>{order.title}</h4>
               <p><strong>Бюджет:</strong> ${order.budget}</p>
               <p><strong>Навыки:</strong> {order.skills.join(", ")}</p>
-              <p><strong>Языки:</strong> {order.languages.join(", ")}</p>
               <p><strong>Местоположение:</strong> {order.location}</p>
               <p><strong>Дата:</strong> {order.date}</p>
             </div>

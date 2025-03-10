@@ -1,0 +1,8 @@
+http://localhost:5000/api/categories
+
+{
+    "title": "Веб-сайты, IT и Программирование",
+    "icon": "FaDesktop",
+    "services": ["PHP", "HTML", "JavaScript", "React", "Node.js"],
+    "link": "/web-development"
+}
