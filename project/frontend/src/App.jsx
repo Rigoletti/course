@@ -33,7 +33,6 @@ function App() {
         <Route path="/data-analytics" element={<Analytics />} />
         <Route path="/consulting" element={<Consulting />} />
         <Route path="/cloud-solutions" element={<Cloud />} />
-
       </Routes>
     </div>
   );
