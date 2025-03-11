@@ -1,0 +1,24 @@
+.badge {
+    font-size: 0.9em;
+    padding: 0.5em 0.75em;
+  }
+
+  /* Увеличиваем высоту поиска */
+.search-input {
+    padding: 15px; /* Больше padding */
+    font-size: 18px; /* Увеличиваем размер шрифта */
+    height: 60px; /* Фиксированная высота */
+    border-radius: 8px; /* Закругленные углы */
+  }
+  
+  /* Добавляем верхнюю границу для секции фильтров */
+  .filters-section {
+    border-top: 2px solid #dee2e6; /* Цвет границы */
+    padding-top: 20px; /* Отступ сверху */
+  }
+  
+  /* Добавляем верхнюю границу для секции заказов */
+  .orders-section {
+    border-top: 2px solid #dee2e6; /* Цвет границы */
+    padding-top: 20px; /* Отступ сверху */
+  }

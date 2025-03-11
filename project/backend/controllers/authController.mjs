@@ -22,7 +22,7 @@ const validatePassword = (password) => {
 
 export const register = async (req, res) => {
   try {
-    const { firstName, lastName, username, email, password } = req.body;
+    const { firstName, lastName, username, email, password, role } = req.body;
 
     // Валидация данных
     if (!validateName(firstName) || !validateName(lastName)) {
@@ -36,36 +36,28 @@ export const register = async (req, res) => {
     }
 
     // Проверка существующего пользователя
-    const existingUserByEmail = await User.findOne({ email });
-    if (existingUserByEmail) {
-      return res.status(400).json({ message: "Пользователь с таким email уже существует." });
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Пользователь с таким email уже существует' });
     }
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    const existingUserByUsername = await User.findOne({ username });
-    if (existingUserByUsername) {
-      return res.status(400).json({ message: "Пользователь с таким логином уже существует." });
-    }
-
-    // Хеширование пароля
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Создание нового пользователя
-    const newUser = new User({
+  // Создание пользователя
+    const user = new User({
       firstName,
       lastName,
       username,
       email,
-      password: hashedPassword,
+      password: hashedPassword, // Сохраняем хешированный пароль
+      role: role || "user",
     });
 
-    // Сохранение пользователя в базе данных
-    await newUser.save();
-
-    // Успешный ответ
-    res.status(201).json({ message: "Регистрация успешна." });
+    await user.save();
+    res.status(201).json({ message: 'Пользователь успешно зарегистрирован', user });
   } catch (error) {
-    console.error("Ошибка при регистрации:", error);
-    res.status(500).json({ message: "Произошла ошибка при регистрации. Пожалуйста, попробуйте позже." });
+    console.error('Ошибка при регистрации:', error);
+    res.status(500).json({ message: 'Ошибка сервера' });
   }
 };
 
@@ -73,35 +65,24 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Проверяем, что email и password переданы
-    if (!email || !password) {
-      return res.status(400).json({ message: "Email и пароль обязательны." });
-    }
-
-    // Ищем пользователя по email
+    // Поиск пользователя по email
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: "Пользователь с таким email не найден." });
+      return res.status(400).json({ message: 'Пользователь не найден' });
     }
 
-    // Сравниваем пароль
+    // Сравнение пароля
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(400).json({ message: "Неверный пароль." });
+      return res.status(400).json({ message: 'Неверный пароль' });
     }
 
-    // Создаем JWT токен
-    const token = jwt.sign(
-      { userId: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
+    // Генерация токена
+    const token = generateToken(user);
 
-    // Отправляем успешный ответ
-    res.status(200).json({ message: "Авторизация успешна.", token });
+    res.json({ token, user });
   } catch (error) {
-    console.error("Ошибка при входе:", error);
-    res.status(500).json({ message: "Произошла ошибка при входе. Пожалуйста, попробуйте позже." });
+    console.error('Ошибка при авторизации:', error);
+    res.status(500).json({ message: 'Ошибка сервера' });
   }
 };
-

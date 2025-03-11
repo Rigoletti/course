@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true, trim: true },
@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ["user", "admin"], default: "user" },
   githubId: { type: String, unique: true, sparse: true },
   avatar: { type: String, default: "" },
-  bio: { type: String, default: "" }, 
+  bio: { type: String, default: "" },
   balance: { type: Number, default: 0 },
   completedOrders: { type: Number, default: 0 },
   rating: { type: Number, default: 0 },

@@ -48,13 +48,13 @@ const Header = () => {
           {/* Основные ссылки (ближе к логотипу) */}
           <ul className="navbar-nav">
             <li className="nav-item">
-              <Link to="/category" className="nav-link literata-font">
+              <Link to="/zayavka" className="nav-link literata-font">
               Подать заявку
               </Link>
             </li>
       
             <li className="nav-item">
-              <Link to="/jobs" className="nav-link literata-font">
+              <Link to="/category" className="nav-link literata-font">
                 Найти работу
               </Link>
             </li>

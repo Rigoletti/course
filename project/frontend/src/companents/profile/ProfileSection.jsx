@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchProfile, updateProfile, uploadAvatar } from "../../api/profile/profile"; 
+import axios from "axios";
 import { FaWallet, FaTasks, FaStar, FaEdit, FaUpload } from "react-icons/fa";
 import "../../style/profile/ProfileSection.css";
 
@@ -26,7 +26,7 @@ const ProfileSection = () => {
       window.history.replaceState({}, document.title, "/profile");
     }
 
-    const loadProfile = async () => {
+    const fetchProfile = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
         navigate("/authorization");
@@ -34,17 +34,22 @@ const ProfileSection = () => {
       }
 
       try {
-        const data = await fetchProfile(token); // Используем функцию из profile.js
-        setUser(data.user);
+        const response = await axios.get("http://localhost:5000/api/auth/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log("Данные профиля:", response.data); // Логируем данные
+        setUser(response.data.user);
         setFormData({
-          firstName: data.user.firstName || "",
-          lastName: data.user.lastName || "",
-          bio: data.user.bio || "",
+          firstName: response.data.user.firstName || "",
+          lastName: response.data.user.lastName || "",
+          bio: response.data.user.bio || "",
           avatar: null,
         });
-        setPreviewAvatar(data.user.avatar || null);
+        setPreviewAvatar(response.data.user.avatar || null);
       } catch (error) {
-        console.error("Ошибка при загрузке профиля:", error);
+        console.error("Ошибка при получении профиля:", error);
         if (error.response?.status === 401) {
           localStorage.removeItem("token");
           navigate("/authorization");
@@ -52,7 +57,7 @@ const ProfileSection = () => {
       }
     };
 
-    loadProfile();
+    fetchProfile();
   }, [navigate]);
 
   const handleLogout = () => {
@@ -69,10 +74,34 @@ const ProfileSection = () => {
     const { firstName, lastName, bio, avatar } = formData;
 
     try {
-      await updateProfile(token, { firstName, lastName, bio }); // Используем функцию из profile.js
+      const response = await axios.put(
+        "http://localhost:5000/api/auth/profile",
+        { firstName, lastName, bio },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setUser(response.data.user);
+
       if (avatar) {
-        await uploadAvatar(token, avatar); // Используем функцию из profile.js
+        const formDataToSend = new FormData();
+        formDataToSend.append("avatar", avatar);
+
+        const uploadResponse = await axios.post(
+          "http://localhost:5000/api/auth/upload-avatar",
+          formDataToSend,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        setUser((prevUser) => ({ ...prevUser, avatar: uploadResponse.data.avatar }));
       }
+
       setIsEditing(false);
     } catch (error) {
       console.error("Ошибка при обновлении профиля:", error);

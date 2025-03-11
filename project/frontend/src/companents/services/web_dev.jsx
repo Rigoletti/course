@@ -1,106 +1,133 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../../style/services/WebDev.css';
+import { fetchOrders } from '../../api/services/web'; 
 
 const WebDev = () => {
-  const [orders, setOrders] = useState([
-    { id: 1, title: "Разработка сайта", budget: 1000, skills: ["React", "Node.js"], location: "Москва", date: "05.11.2024" },
-    { id: 2, title: "Создание лендинга", budget: 500, skills: ["HTML", "CSS", "JS"], location: "Санкт-Петербург", date: "23.03.2025" },
-    { id: 3, title: "Разработка API", budget: 1500, skills: ["Python", "Django"], location: "Новосибирск", date: "10.10.2024" },
-  ]);
-
+  const [orders, setOrders] = useState([]); // Изначально пустой массив
   const [searchTerm, setSearchTerm] = useState("");
-  const [locationFilter, setLocationFilter] = useState("");
-  const [budgetFilter, setBudgetFilter] = useState("");
   const [skillsFilter, setSkillsFilter] = useState("");
-  const [sortByDate, setSortByDate] = useState("newest");
+  const [sortByTime, setSortByTime] = useState("newest");
+  const [sortByPrice, setSortByPrice] = useState("none");
 
+  // Загрузка данных с бэкенда при монтировании компонента
+  useEffect(() => {
+    const loadOrders = async () => {
+      try {
+        const data = await fetchOrders();
+        setOrders(data);
+      } catch (error) {
+        console.error('Ошибка при загрузке заказов:', error);
+      }
+    };
+
+    loadOrders();
+  }, []);
+
+  // Фильтрация и сортировка заказов
   const filteredOrders = orders
     .filter(order => order.title.toLowerCase().includes(searchTerm.toLowerCase()))
-    .filter(order => locationFilter ? order.location.toLowerCase().includes(locationFilter.toLowerCase()) : true)
-    .filter(order => budgetFilter ? order.budget <= parseInt(budgetFilter) : true)
     .filter(order => skillsFilter ? order.skills.some(skill => skill.toLowerCase().includes(skillsFilter.toLowerCase())) : true)
-    .sort((a, b) => sortByDate === "newest" ? new Date(b.date) - new Date(a.date) : new Date(a.date) - new Date(b.date));
+    .sort((a, b) => {
+      if (sortByTime === "newest") {
+        return b.daysLeft - a.daysLeft;
+      } else if (sortByTime === "oldest") {
+        return a.daysLeft - b.daysLeft;
+      }
+      return 0;
+    })
+    .sort((a, b) => {
+      if (sortByPrice === "priceHighToLow") {
+        return b.price - a.price;
+      } else if (sortByPrice === "priceLowToHigh") {
+        return a.price - b.price;
+      }
+      return 0;
+    });
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", padding: "20px" }}>
+    <div className="container-fluid vh-100 p-4">
       {/* Поиск сверху */}
-      <div style={{ marginBottom: "20px" }}>
+      <div className="mb-4">
         <input
           type="text"
+          className="form-control search-input"
           placeholder="Поиск по ключевым словам"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ width: "100%", padding: "10px", fontSize: "16px" }}
         />
       </div>
 
-      <div style={{ display: "flex", flex: 1, gap: "20px" }}>
+      <div className="row flex-grow-1">
         {/* Фильтры слева */}
-        <div style={{ width: "250px", borderRight: "1px solid #ccc", paddingRight: "20px" }}>
-          <h3>Фильтры</h3>
-          <div style={{ marginBottom: "15px" }}>
-            <label>Местоположение:</label>
+        <div className="col-md-3 border-end pe-3 filters-section">
+          <h3 className="mb-4">Фильтры</h3>
+          <div className="mb-3">
+            <label className="form-label">Навыки:</label>
             <input
               type="text"
-              placeholder="Город"
-              value={locationFilter}
-              onChange={(e) => setLocationFilter(e.target.value)}
-              style={{ width: "100%", padding: "5px" }}
-            />
-          </div>
-
-          <div style={{ marginBottom: "15px" }}>
-            <label>Бюджет:</label>
-            <input
-              type="number"
-              placeholder="Макс. бюджет"
-              value={budgetFilter}
-              onChange={(e) => setBudgetFilter(e.target.value)}
-              style={{ width: "100%", padding: "5px" }}
-            />
-          </div>
-
-          <div style={{ marginBottom: "15px" }}>
-            <label>Навыки:</label>
-            <input
-              type="text"
+              className="form-control"
               placeholder="Навыки"
               value={skillsFilter}
               onChange={(e) => setSkillsFilter(e.target.value)}
-              style={{ width: "100%", padding: "5px" }}
             />
           </div>
 
-          <div style={{ marginBottom: "15px" }}>
-            <label>Сортировка по дате:</label>
+          <div className="mb-3">
+            <label className="form-label">Сортировка по времени:</label>
             <select
-              value={sortByDate}
-              onChange={(e) => setSortByDate(e.target.value)}
-              style={{ width: "100%", padding: "5px" }}
+              className="form-select"
+              value={sortByTime}
+              onChange={(e) => setSortByTime(e.target.value)}
             >
               <option value="newest">Сначала новые</option>
               <option value="oldest">Сначала старые</option>
             </select>
           </div>
+
+          <div className="mb-3">
+            <label className="form-label">Сортировка по цене:</label>
+            <select
+              className="form-select"
+              value={sortByPrice}
+              onChange={(e) => setSortByPrice(e.target.value)}
+            >
+              <option value="none">Без сортировки</option>
+              <option value="priceHighToLow">Цена: по убыванию</option>
+              <option value="priceLowToHigh">Цена: по возрастанию</option>
+            </select>
+          </div>
         </div>
 
         {/* Заказы справа */}
-        <div style={{ flex: 1 }}>
-          <h3>Заказы</h3>
+        <div className="col-md-9 orders-section">
+          <h3 className="mb-4">Заказы</h3>
           {filteredOrders.map(order => (
             <div
-              key={order.id}
-              style={{
-                border: "1px solid #ccc",
-                padding: "15px",
-                marginBottom: "10px",
-                borderRadius: "5px",
-              }}
+              key={order._id} // Используем _id из MongoDB
+              className="card mb-3"
             >
-              <h4>{order.title}</h4>
-              <p><strong>Бюджет:</strong> ${order.budget}</p>
-              <p><strong>Навыки:</strong> {order.skills.join(", ")}</p>
-              <p><strong>Местоположение:</strong> {order.location}</p>
-              <p><strong>Дата:</strong> {order.date}</p>
+              <div className="card-body d-flex justify-content-between">
+                {/* Левая часть карточки */}
+                <div className="flex-grow-1 me-3">
+                  <h4 className="card-title">{order.title}</h4>
+                  <p className="card-text text-muted">Осталось дней: {order.daysLeft}</p>
+                  <p className="card-text">{order.description}</p>
+                  <div className="mt-3">
+                    <strong>Требуемые навыки:</strong>
+                    <div className="d-flex flex-wrap gap-2 mt-2">
+                      {order.skills.map((skill, index) => (
+                        <span key={index} className="badge bg-primary">{skill}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Правая часть карточки (цена) */}
+                <div className="text-end">
+                  <h3 className="text-success">{order.price.toLocaleString()}₽</h3>
+                </div>
+              </div>
             </div>
           ))}
         </div>

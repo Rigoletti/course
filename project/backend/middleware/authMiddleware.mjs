@@ -9,10 +9,21 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.userId; // Добавляем ID пользователя в запрос
+    req.user = { // Добавляем информацию о пользователе в запрос
+      _id: decoded.userId, // Убедитесь, что это поле называется `_id`
+      role: decoded.role,
+    };
     next();
   } catch (error) {
     res.status(401).json({ message: "Нет доступа" });
+  }
+};
+
+export const isAdmin = (req, res, next) => {
+  if (req.user && req.user.role === 'admin') {
+    next(); // Пользователь является администратором
+  } else {
+    res.status(403).json({ message: 'Доступ запрещен. Требуются права администратора.' });
   }
 };
 
