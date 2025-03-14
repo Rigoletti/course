@@ -20,6 +20,16 @@ const validatePassword = (password) => {
   return regex.test(password);
 };
 
+// Функция для генерации токена
+const generateToken = (user) => {
+  const payload = {
+    userId: user._id,
+    email: user.email,
+    role: user.role,
+  };
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
+};
+
 export const register = async (req, res) => {
   try {
     const { firstName, lastName, username, email, password, role } = req.body;
@@ -40,10 +50,12 @@ export const register = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ message: 'Пользователь с таким email уже существует' });
     }
+
+    // Хеширование пароля
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-  // Создание пользователя
+    // Создание пользователя
     const user = new User({
       firstName,
       lastName,

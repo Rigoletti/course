@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
   bio: { type: String, default: "" },
   balance: { type: Number, default: 0 },
   completedOrders: { type: Number, default: 0 },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   rating: { type: Number, default: 0 },
   reviews: [{ type: String }],
 }, { timestamps: true });

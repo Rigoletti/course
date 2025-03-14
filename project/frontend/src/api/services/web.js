@@ -1,11 +1,13 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api/orders'; 
+const API_BASE_URL = 'http://localhost:5000/api/orders';
 
-// Получить все заказы
-export const fetchOrders = async () => {
+// Получить все заказы с пагинацией
+export const fetchOrders = async (page = 1, limit = 10) => {
   try {
-    const response = await axios.get(API_BASE_URL);
+    const response = await axios.get(API_BASE_URL, {
+      params: { page, limit }, // Передаем параметры пагинации
+    });
     return response.data;
   } catch (error) {
     console.error('Ошибка при получении заказов:', error);

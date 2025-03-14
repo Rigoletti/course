@@ -3,36 +3,56 @@ import User from '../../models/User.mjs';
 
 // Создание заказа (доступно только админу)
 export const createOrder = async (req, res) => {
-    try {
-      const { title, daysLeft, description, skills, price } = req.body;
-  
-      if (!req.user || !req.user._id) {
-        return res.status(403).json({ message: 'Доступ запрещен. Пользователь не авторизован.' });
-      }
-  
-      const newOrder = new Order({
-        title,
-        daysLeft,
-        description,
-        skills,
-        price,
-        createdBy: req.user._id, 
-      });
-  
-      await newOrder.save();
-      res.status(201).json(newOrder);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  };
-
-// Получение всех заказов (доступно всем)
-export const getOrders = async (req, res) => {
   try {
-    const orders = await Order.find().populate('createdBy', 'username email'); // Добавляем информацию о создателе
-    res.json(orders);
+    const { title, daysLeft, description, skills, price } = req.body;
+
+    if (!req.user || !req.user._id) {
+      return res.status(403).json({ message: 'Доступ запрещен. Пользователь не авторизован.' });
+    }
+
+    const newOrder = new Order({
+      title,
+      daysLeft,
+      description,
+      skills,
+      price,
+      createdBy: req.user._id,
+    });
+
+    await newOrder.save();
+    res.status(201).json(newOrder);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+// Получение всех заказов (доступно всем)
+// Контроллер для получения заказов с пагинацией
+export const getOrders = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // Текущая страница (по умолчанию 1)
+    const limit = parseInt(req.query.limit) || 10; // Количество элементов на странице (по умолчанию 10)
+    const skip = (page - 1) * limit; // Пропуск элементов для пагинации
+
+    // Получаем общее количество заказов
+    const total = await Order.countDocuments();
+
+    // Получаем заказы с пагинацией
+    const orders = await Order.find()
+      .skip(skip)
+      .limit(limit)
+      .populate('createdBy', 'username email'); // Добавляем информацию о создателе
+
+    // Отправляем ответ
+    res.json({
+      success: true,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+      orders,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
