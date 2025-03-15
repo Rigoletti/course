@@ -41,7 +41,6 @@ const OrderDetails = () => {
     return <p>Заказ не найден.</p>;
   }
 
-  // Проверяем наличие данных о клиенте и используем значения по умолчанию
   const client = order.client || {
     name: 'Неизвестно',
     surname: '',
@@ -59,7 +58,7 @@ const OrderDetails = () => {
         <p className="order-date">Размещено: {new Date(order.createdAt).toLocaleDateString()}</p>
         <p className="order-description">{order.description}</p>
         <div className="order-skills">
-          <strong>Требуемые навыки:</strong>
+          <strong>Требуемые навык:</strong>
           <div className="skills-list">
             {order.skills.map((skill, index) => (
               <span key={index} className="skill-badge">
