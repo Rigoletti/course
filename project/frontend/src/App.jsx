@@ -7,6 +7,9 @@ import Category from './pages/category/Category';
 
 // services
 import Web from './pages/servises/web';
+import WebDetails from './companents/services/web/WebDetails'
+
+
 import Mob from './pages/servises/mob'
 import Cloud from './pages/servises/cloud'
 import Seo from './pages/servises/seo';
@@ -26,6 +29,8 @@ function App() {
         <Route path="/category" element={<Category />} />
         {/* servises */}
         <Route path="/web" element={<Web />} />
+        <Route path="/orders/:orderId" element={<WebDetails />} />
+
         <Route path="/mobile-development" element={<Mob />} />
         <Route path="/seo" element={<Seo />} />
         <Route path="/digital-marketing" element={<Digital />} />

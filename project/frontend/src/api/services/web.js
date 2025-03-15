@@ -15,6 +15,17 @@ export const fetchOrders = async (page = 1, limit = 10) => {
   }
 };
 
+// Получить заказ по ID
+export const fetchOrderById = async (id) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Ошибка при получении заказа:', error);
+    throw error;
+  }
+};
+
 // Создать заказ (для админа)
 export const createOrder = async (orderData, token) => {
   try {

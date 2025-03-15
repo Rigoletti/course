@@ -59,13 +59,14 @@ export const getOrders = async (req, res) => {
 // Получение одного заказа по ID (доступно всем)
 export const getOrderById = async (req, res) => {
   try {
+    console.log('Запрошен ID заказа:', req.params.id); 
     const order = await Order.findById(req.params.id).populate('createdBy', 'username email');
     if (!order) {
-      return res.status(404).json({ message: 'Заказ не найден' });
+      return res.status(404).json({ success: false, message: 'Заказ не найден' });
     }
-    res.json(order);
+    res.json({ success: true, order });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
