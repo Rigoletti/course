@@ -58,7 +58,7 @@ const OrderDetails = () => {
         <p className="order-date">Размещено: {new Date(order.createdAt).toLocaleDateString()}</p>
         <p className="order-description">{order.description}</p>
         <div className="order-skills">
-          <strong>Требуемые навык:</strong>
+          <strong>Требуемые навыки:</strong>
           <div className="skills-list">
             {order.skills.map((skill, index) => (
               <span key={index} className="skill-badge">
