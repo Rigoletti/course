@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchOrderById } from '../../../api/services/web';
+import '../../../style/services/web/WebDetails.css'; 
+import Header from '../../../companents/layout/Header'
+
 
 const OrderDetails = () => {
   const { orderId } = useParams();
@@ -40,23 +43,52 @@ const OrderDetails = () => {
     return <p>Заказ не найден.</p>;
   }
 
+  // Проверяем наличие данных о клиенте и используем значения по умолчанию
+  const client = order.client || {
+    name: 'Неизвестно',
+    surname: '',
+    registeredAt: new Date().toISOString(),
+    rating: 0,
+  };
+
   return (
-    <div className="container">
-      <h1>{order.title}</h1>
-      <p>{order.description}</p>
-      <p>Цена: {order.price.toLocaleString()}₽</p>
-      <p>Осталось дней: {order.daysLeft}</p>
-      <div>
-        <strong>Требуемые навыки:</strong>
-        <div className="d-flex flex-wrap gap-2 mt-2">
-          {order.skills.map((skill, index) => (
-            <span key={index} className="badge bg-primary">
-              {skill}
-            </span>
-          ))}
+    <div>
+      <Header />
+      <div className="order-details-container">
+      <div className="order-info">
+        <div className="order-header">
+          <h1 className="order-title">{order.title}</h1>
+          <span className="order-price">{order.price.toLocaleString()}₽</span>
+        </div>
+        <p className="order-date">Размещено: {new Date(order.createdAt).toLocaleDateString()}</p>
+        <p className="order-description">{order.description}</p>
+        <div className="order-skills">
+          <strong>Требуемые навыки:</strong>
+          <div className="skills-list">
+            {order.skills.map((skill, index) => (
+              <span key={index} className="skill-badge">
+                {skill}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
+      <div className="client-info">
+        <h2>О клиенте</h2>
+        <p className="client-name">
+          {client.name} {client.surname}
+        </p>
+        <div className="client-rating">
+          <span className="stars">{'★'.repeat(Math.round(client.rating))}{'☆'.repeat(5 - Math.round(client.rating))}</span>
+          <span className="rating-number">{client.rating.toFixed(1)}</span>
+        </div>
+        <p className="client-registration-date">
+          Зарегистрирован: {new Date(client.registeredAt).toLocaleDateString()}
+        </p>
+      </div>
     </div>
+    </div>
+    
   );
 };
 

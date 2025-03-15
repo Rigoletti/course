@@ -1,0 +1,94 @@
+.order-details-container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  .order-info {
+    flex: 2;
+    padding: 10px;
+  }
+  
+  .order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .order-title {
+    font-size: 24px;
+    margin: 0;
+  }
+  
+  .order-price {
+    font-size: 24px;
+    color: #28a745;
+  }
+  
+  .order-date {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  .order-description {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  
+  .order-skills {
+    margin-bottom: 20px;
+  }
+  
+  .skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .skill-badge {
+    background-color: #007bff;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 14px;
+  }
+  
+  .client-info {
+    flex: 1;
+    padding: 10px;
+    border-left: 1px solid #ddd;
+    padding-left: 20px;
+  }
+  
+  .client-name {
+    font-size: 18px;
+    margin: 0 0 10px 0;
+  }
+  
+  .client-rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .stars {
+    color: #ffc107;
+    font-size: 18px;
+  }
+  
+  .rating-number {
+    font-size: 16px;
+    color: #666;
+  }
+  
+  .client-registration-date {
+    font-size: 14px;
+    color: #666;
+  }
