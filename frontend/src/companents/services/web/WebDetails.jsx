@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchOrderById } from '../../../api/services/web';
-import '../../../style/services/web/WebDetails.css'; 
-import Header from '../../../companents/layout/Header'
-
+import "../../../style/services/web/WebDetails.css"
 
 const OrderDetails = () => {
   const { orderId } = useParams();
@@ -52,9 +50,7 @@ const OrderDetails = () => {
   };
 
   return (
-    <div>
-      <Header />
-      <div className="order-details-container">
+    <div className="order-details-container">
       <div className="order-info">
         <div className="order-header">
           <h1 className="order-title">{order.title}</h1>
@@ -87,8 +83,6 @@ const OrderDetails = () => {
         </p>
       </div>
     </div>
-    </div>
-    
   );
 };
 
