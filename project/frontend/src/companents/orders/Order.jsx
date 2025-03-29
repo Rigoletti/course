@@ -18,14 +18,14 @@ const Order = () => {
     const loadOrders = async () => {
       try {
         setLoading(true);
-        const data = await fetchOrdersByCategory(categoryId, currentPage, 10);
+        const response = await fetchOrdersByCategory(categoryId, currentPage, 10);
         
-        if (data && (data.success || data.orders)) {
-          setOrders(data.orders || []);
-          setTotalPages(data.totalPages || 1);
+        if (response.success) {
+          setOrders(response.orders || []);
+          setTotalPages(response.totalPages || 1);
           setError(null);
         } else {
-          throw new Error(data?.message || 'Failed to load orders');
+          throw new Error(response.error || 'Не удалось загрузить заказы');
         }
       } catch (err) {
         console.error('Error:', err);
@@ -37,7 +37,7 @@ const Order = () => {
 
     loadOrders();
   }, [categoryId, currentPage]);
-
+  
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };

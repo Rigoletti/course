@@ -11,9 +11,47 @@ export const uploadIcon = multer.single('icon');
 
 export const getCategories = async (req, res) => {
     try {
-        const categories = await Category.find();
-        res.status(200).json(categories);
+        // Получаем все категории
+        const categories = await Category.find().lean();
+        
+        // Получаем ВСЕ заказы с нужными полями
+        const allOrders = await Order.find({}, 'category subtopic').lean();
+        
+        console.log('Total orders count:', allOrders.length);
+        
+        // Формируем результат с подсчетом заказов
+        const categoriesWithOrders = categories.map(category => {
+            // Фильтруем заказы для текущей категории
+            const categoryOrders = allOrders.filter(order => 
+                order.category && order.category.toString() === category._id.toString()
+            );
+            
+            console.log(`Orders for category ${category.title}:`, categoryOrders.length);
+            
+            // Обновляем подкатегории с актуальным количеством заказов
+            const subtopicsWithOrders = category.subtopics.map(subtopic => {
+                // Ищем точное совпадение по имени подкатегории
+                const count = categoryOrders.filter(order => 
+                    order.subtopic && order.subtopic.trim().toLowerCase() === subtopic.name.trim().toLowerCase()
+                ).length;
+                
+                console.log(`Orders for subtopic ${subtopic.name}:`, count);
+                
+                return {
+                    name: subtopic.name,
+                    orders: count
+                };
+            });
+            
+            return {
+                ...category,
+                subtopics: subtopicsWithOrders
+            };
+        });
+        
+        res.status(200).json(categoriesWithOrders);
     } catch (error) {
+        console.error('Error in getCategories:', error);
         res.status(500).json({ 
             success: false,
             message: 'Ошибка при получении категорий',

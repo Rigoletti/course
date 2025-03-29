@@ -28,6 +28,10 @@ const orderSchema = new mongoose.Schema({
     ref: 'Category',
     required: true
   },
+  subtopic: {
+    type: String,
+    required: true // Добавляем обязательное поле для подкатегории
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -37,6 +41,11 @@ const orderSchema = new mongoose.Schema({
     default: Date.now
   }
 });
+
+// Добавляем индексы для ускорения поиска
+orderSchema.index({ category: 1 });
+orderSchema.index({ subtopic: 1 });
+orderSchema.index({ category: 1, subtopic: 1 });
 
 orderSchema.pre('save', function(next) {
   this.updatedAt = Date.now();

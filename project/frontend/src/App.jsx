@@ -11,6 +11,7 @@ import Orders from './companents/admin/Orders';
 import OrderDetails from './companents/orders/OrderDetails';
 import CompleteGithubRegistration from "./companents/auth/CompleteGithubRegistration";
 import OrderPage from "./pages/orders/OrderPage";
+import OrderRequests from "./companents/admin/OrderRequests";
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
         <Route path="/admin/*" element={<Admin />}>
           <Route path="categories" element={<Categories />} />
           <Route path="orders" element={<Orders />} />
+          <Route path="requests" element={<OrderRequests />} />
           <Route index element={<Categories />} />
         </Route>
       </Routes>

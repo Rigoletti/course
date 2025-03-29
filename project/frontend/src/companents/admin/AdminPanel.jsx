@@ -1,8 +1,9 @@
 import React from "react";
 import { Routes, Route, Link, useLocation } from "react-router-dom";
-import { BiCategory, BiTask } from "react-icons/bi";
+import { BiCategory, BiTask, BiListCheck } from "react-icons/bi";
 import Categories from "./Categories";
 import Orders from "./Orders";
+import OrderRequests from "./OrderRequests";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../assets/style/admin/adminStyles.css';
 
@@ -32,6 +33,13 @@ const AdminPanel = () => {
               <BiTask className="me-2" />
               Заказы
             </Link>
+            <Link
+              to="/admin/requests"
+              className={`nav-link rounded mb-1 ${activeTab.includes('requests') ? 'active' : ''}`}
+            >
+              <BiListCheck className="me-2" />
+              Заявки
+            </Link>
           </nav>
         </div>
       </div>
@@ -39,6 +47,7 @@ const AdminPanel = () => {
         <Routes>
           <Route path="categories" element={<Categories />} />
           <Route path="orders" element={<Orders />} />
+          <Route path="requests" element={<OrderRequests />} />
           <Route path="/" element={<Categories />} />
         </Routes>
       </div>

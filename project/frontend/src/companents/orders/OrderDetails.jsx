@@ -14,15 +14,17 @@ const OrderDetails = () => {
   useEffect(() => {
     const loadOrder = async () => {
       try {
-        const data = await fetchOrderById(orderId);
-        if (data.success) {
-          setOrder(data.order);
+        setLoading(true);
+        const response = await fetchOrderById(orderId);
+        
+        if (response.success) {
+          setOrder(response.order);
         } else {
-          setError('Заказ не найден');
+          setError(response.message || 'Заказ не найден');
         }
-      } catch (error) {
-        console.error('Ошибка при загрузке заказа:', error);
-        setError('Ошибка при загрузке заказа');
+      } catch (err) {
+        console.error('Ошибка при загрузке заказа:', err);
+        setError(err.message || 'Ошибка при загрузке заказа');
       } finally {
         setLoading(false);
       }

@@ -1,14 +1,322 @@
 import Order from '../models/Order.mjs';
 import Category from '../models/Category.mjs';
 import mongoose from 'mongoose';
+import OrderRequest from '../models/OrderRequest.mjs';
+
+// Создание заявки на заказ
+export const createOrderRequest = async (req, res) => {
+  try {
+    const { title, description, skills = [], category, price, daysLeft } = req.body;
+
+    // Валидация
+    const errors = [];
+    if (!title) errors.push('Не указано название');
+    if (!description) errors.push('Не указано описание');
+    if (!category) errors.push('Не указана категория');
+    if (skills.length === 0) errors.push('Не указаны навыки');
+    if (price === undefined || price === null) errors.push('Не указана цена');
+    if (daysLeft === undefined || daysLeft === null) errors.push('Не указан срок выполнения');
+
+    if (errors.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Ошибки валидации',
+        errors: errors
+      });
+    }
+
+    // Проверяем, что price и daysLeft - числа
+    if (isNaN(price)) errors.push('Цена должна быть числом'); // Было if (isNaN(price) errors.push...
+    if (isNaN(daysLeft)) errors.push('Срок выполнения должен быть числом');
+   
+    if (errors.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Ошибки валидации',
+        errors: errors
+      });
+    }
+
+    // Проверяем авторизацию
+    if (!req.user?._id) {
+      return res.status(403).json({ 
+        success: false,
+        message: 'Доступ запрещен' 
+      });
+    }
+
+    // Проверяем существование категории
+    const categoryDoc = await Category.findById(category);
+    if (!categoryDoc) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Категория не найдена' 
+      });
+    }
+
+    // Создаем заявку
+    const orderRequest = new OrderRequest({
+      title,
+      description,
+      skills,
+      category,
+      price: Number(price),
+      daysLeft: Number(daysLeft),
+      createdBy: req.user._id,
+      status: 'pending'
+    });
+
+    await orderRequest.save();
+
+    res.status(201).json({
+      success: true,
+      data: orderRequest
+    });
+
+  } catch (error) {
+    console.error('Error creating order request:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Ошибка при создании заявки на заказ',
+      error: error.message
+    });
+  }
+};
+
+// Получение заявок (для админа)
+export const getOrderRequests = async (req, res) => {
+  try {
+    const { status } = req.query;
+    
+    const query = {};
+    if (status) {
+      query.status = status;
+    }
+
+    const requests = await OrderRequest.find(query)
+      .populate('createdBy', 'username email firstName lastName')
+      .populate('category', 'title')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      data: requests
+    });
+  } catch (error) {
+    console.error('Error getting order requests:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Ошибка при получении заявок'
+    });
+  }
+};
+
+// Одобрение заявки (админ)
+export const approveOrderRequest = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { adminComment, subtopic } = req.body;
+
+    // Находим заявку
+    const request = await OrderRequest.findById(id)
+      .populate('createdBy', 'firstName lastName email')
+      .populate('category', 'title services');
+
+    if (!request) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Заявка не найдена' 
+      });
+    }
+
+    // Определяем subtopic (из запроса или первого навыка)
+    const finalSubtopic = subtopic || request.skills[0];
+    if (!finalSubtopic) {
+      return res.status(400).json({
+        success: false,
+        message: 'Не удалось определить подкатегорию (subtopic)'
+      });
+    }
+
+    // Создаем заказ
+    const order = new Order({
+      title: request.title,
+      description: request.description,
+      skills: request.skills,
+      price: request.price,
+      daysLeft: request.daysLeft,
+      createdBy: request.createdBy._id,
+      category: request.category._id,
+      subtopic: finalSubtopic,
+      status: 'active'
+    });
+
+    await order.save();
+
+    // Обновляем счетчик в категории
+    await Category.updateOne(
+      { _id: request.category._id, "subtopics.name": finalSubtopic },
+      { $inc: { "subtopics.$.orders": 1 } },
+      { upsert: true } // Создаем подкатегорию, если не существует
+    );
+
+    // Обновляем статус заявки
+    await OrderRequest.findByIdAndUpdate(id, {
+      status: 'approved',
+      adminComment: adminComment || ''
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        order: order,
+        request: {
+          ...request.toObject(),
+          status: 'approved',
+          adminComment: adminComment || ''
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('Error approving order request:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Ошибка при одобрении заявки',
+      error: error.message
+    });
+  }
+};
+// Отклонение заявки (админ)
+export const rejectOrderRequest = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { adminComment } = req.body;
+
+    const request = await OrderRequest.findByIdAndUpdate(
+      id,
+      { 
+        status: 'rejected',
+        adminComment: adminComment || '' 
+      },
+      { new: true }
+    );
+
+    if (!request) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Заявка не найдена' 
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: request
+    });
+  } catch (error) {
+    console.error('Error rejecting order request:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Ошибка при отклонении заявки'
+    });
+  }
+};
+
+// Редактирование заявки (админ)
+export const updateOrderRequest = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, skills, category, price, daysLeft } = req.body;
+
+    const request = await OrderRequest.findById(id);
+    if (!request) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Заявка не найдена' 
+      });
+    }
+
+    // Обновляем данные заявки
+    request.title = title || request.title;
+    request.description = description || request.description;
+    request.skills = skills || request.skills;
+    request.category = category || request.category;
+    request.price = price || request.price;
+    request.daysLeft = daysLeft || request.daysLeft;
+
+    await request.save();
+
+    res.status(200).json({
+      success: true,
+      data: request
+    });
+  } catch (error) {
+    console.error('Error updating order request:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Ошибка при обновлении заявки'
+    });
+  }
+};
+
+export const approveOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { adminComment, subtopic } = req.body;
+
+    if (!subtopic) {
+      return res.status(400).json({
+        success: false,
+        message: "Не указана подкатегория (subtopic)"
+      });
+    }
+
+    const order = await Order.findByIdAndUpdate(
+      id,
+      {
+        status: 'approved',
+        adminComment,
+        subtopic,
+        approvedAt: Date.now()
+      },
+      { new: true }
+    );
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Заказ не найден"
+      });
+    }
+
+    // Обновляем счетчик в категории
+    await Category.updateOne(
+      { _id: order.category, "subtopics.name": subtopic },
+      { $inc: { "subtopics.$.orders": 1 } }
+    );
+
+    res.status(200).json({
+      success: true,
+      data: order
+    });
+  } catch (error) {
+    console.error('Error approving order:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка при одобрении заказа',
+      error: error.message
+    });
+  }
+};
+
 
 // Создание заказа (админ)
 export const createOrder = async (req, res) => {
   try {
-    const { title, daysLeft, description, skills = [], price, category } = req.body;
+    const { title, daysLeft, description, skills = [], price, category, subtopic } = req.body;
 
     // Валидация
-    if (!title || !daysLeft || !description || !price || !category) {
+    if (!title || !daysLeft || !description || !price || !category || !subtopic) {
       return res.status(400).json({
         success: false,
         message: 'Все обязательные поля должны быть заполнены'
@@ -44,13 +352,18 @@ export const createOrder = async (req, res) => {
       skills,
       price,
       createdBy: req.user._id,
-      category
+      category,
+      subtopic // Добавляем subtopic
     });
 
     await order.save();
     
-    // Обновляем счетчики навыков в категории
-    await updateSkillsCount(category, skills, 'add');
+    // Обновляем счетчик в категории
+    await Category.updateOne(
+      { _id: category, "subtopics.name": subtopic },
+      { $inc: { "subtopics.$.orders": 1 } },
+      { upsert: true }
+    );
 
     res.status(201).json({
       success: true,
@@ -60,7 +373,8 @@ export const createOrder = async (req, res) => {
     console.error('Error creating order:', error);
     res.status(500).json({ 
       success: false,
-      message: 'Ошибка при создании заказа'
+      message: 'Ошибка при создании заказа',
+      error: error.message
     });
   }
 };
@@ -115,70 +429,95 @@ export const getOrders = async (req, res) => {
 
 // Получение заказов категории с пагинацией
 export const getOrdersByCategory = async (req, res) => {
-  console.log('Start getOrdersByCategory'); // Логирование
   try {
-      const { categoryId } = req.params;
-      console.log('Request params:', req.params); // Логирование
-      
-      // Простая проверка ID
-      if (!categoryId) {
-          console.log('No categoryId provided');
-          return res.status(400).json({ 
-              success: false, 
-              message: 'ID категории обязателен' 
-          });
-      }
+    const { categoryId } = req.params;
+    const { page = 1, limit = 10 } = req.query;
+    
+    const skip = (page - 1) * limit;
 
-      // Проверяем существование категории
-      const category = await Category.findById(categoryId).lean();
-      if (!category) {
-          console.log('Category not found');
-          return res.status(404).json({ 
-              success: false, 
-              message: 'Категория не найдена' 
-          });
-      }
-
-      // Получаем заказы без пагинации для простоты
-      const orders = await Order.find({ category: categoryId })
-          .populate('createdBy', 'username email')
-          .populate('category', 'title icon')
-          .sort({ createdAt: -1 })
-          .lean();
-
-      console.log(`Found ${orders.length} orders`); // Логирование
-
-      res.status(200).json({
-          success: true,
-          category: {
-              title: category.title,
-              icon: category.icon
-          },
-          orders
+    if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Некорректный ID категории' 
       });
+    }
 
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Категория не найдена' 
+      });
+    }
+
+    const [total, orders] = await Promise.all([
+      Order.countDocuments({ category: categoryId }),
+      Order.find({ category: categoryId })
+        .skip(skip)
+        .limit(parseInt(limit))
+        .populate('createdBy', 'username email')
+        .populate('category', 'title')
+        .sort({ createdAt: -1 })
+    ]);
+
+    res.status(200).json({
+      success: true,
+      total,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      totalPages: Math.ceil(total / limit),
+      orders,
+      category: {
+        title: category.title,
+        icon: category.icon
+      }
+    });
   } catch (error) {
-      console.error('Error in getOrdersByCategory:', error);
-      res.status(500).json({ 
-          success: false, 
-          message: 'Ошибка сервера',
-          error: error.message 
-      });
+    console.error('Error in getOrdersByCategory:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Ошибка сервера',
+      error: error.message 
+    });
   }
 };
 // Получение заказа по ID
 export const getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
-      .populate('createdBy', 'username email')
+      .populate('createdBy', 'username email firstName lastName')
       .populate('category', 'title icon');
       
     if (!order) {
-      return res.status(404).json({ success: false, message: 'Заказ не найден' });
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Заказ не найден' 
+      });
     }
-    res.json({ success: true, order });
+
+    // Формируем данные клиента
+    const clientData = {
+      name: order.createdBy.firstName || 'Неизвестно',
+      surname: order.createdBy.lastName || '',
+      registeredAt: order.createdBy.createdAt || new Date(),
+      rating: 4.5, 
+      reviewsCount: 10 
+    };
+
+    res.json({ 
+      success: true, 
+      order: {
+        ...order.toObject(),
+        client: clientData
+      } 
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('Error in getOrderById:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Ошибка сервера',
+      error: error.message 
+    });
   }
 };
 
@@ -320,6 +659,7 @@ const updateSkillsCount = async (categoryId, skills, action = 'add') => {
   const category = await Category.findById(categoryId);
   if (!category) return;
 
+  // Для каждого навыка обновляем счетчик соответствующей подкатегории
   for (const skill of skills) {
     const subtopic = category.subtopics.find(s => s.name === skill);
     
