@@ -1,0 +1,39 @@
+.category-section {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.text-gradient {
+  background-color: black;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hover-card {
+  transition: all 0.3s ease;
+  border-radius: 12px;
+}
+
+.hover-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1) !important;
+}
+
+.category-icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.btn {
+  border-radius: 8px;
+}

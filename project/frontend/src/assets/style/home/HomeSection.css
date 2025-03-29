@@ -1,0 +1,144 @@
+.home-section.dark-background {
+    background-color: #1e1e1e;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  /* Заголовок */
+  .home-section .section-title {
+    font-size: 36px;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  
+  /* Карточки */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    width: 100%;
+  }
+  
+  .home-section .container .card {
+    position: relative;
+    border-radius: 10px;
+    background: #2a2a2a;
+    transition: transform 0.3s ease;
+  }
+  
+  .home-section .container .card:hover {
+    transform: scale(1.05);
+  }
+  
+  .home-section .container .card .icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.7s;
+    z-index: 1;
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .home-section .container .card .icon i {
+    font-size: 80px;
+    color: #fff;
+  }
+  
+  .home-section .container .card .face {
+    width: 100%;
+    height: 200px;
+    transition: 0.5s;
+  }
+  
+  .home-section .container .card .face.face1 {
+    position: relative;
+    background: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    transform: translateY(100px);
+  }
+  
+  .home-section .container .card:hover .face.face1 {
+    background: #ff0057;
+    transform: translateY(0px);
+  }
+  
+  .home-section .container .card .face.face2 {
+    position: relative;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    transform: translateY(-100px);
+  }
+  
+  .home-section .container .card:hover .face.face2 {
+    transform: translateY(0);
+  }
+  
+  .home-section .container .card .face.face2 .content p {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    color: #414141;
+  }
+  
+  .home-section .container .card .face.face2 .content h3 {
+    margin: 0 0 10px 0;
+    padding: 0;
+    color: #414141;
+    font-size: 24px;
+    text-align: center;
+  }
+  
+  .home-section .container a {
+    text-decoration: none;
+    color: #414141;
+    transition: color 0.3s ease;
+  }
+  
+  .home-section .container a:hover {
+    color: #ff0057;
+  }
+  
+  /* Основной стиль остается без изменений */
+
+/* Медиа-запрос для мобильных устройств */
+@media (max-width: 768px) {
+  /* Показываем face2 по умолчанию */
+  .home-section .container .card .face.face1 {
+    transform: translateY(0px); /* Убираем анимацию */
+    background: #333; /* Сохраняем фон */
+    display: none; /* Скрываем первый слой */
+  }
+
+  .home-section .container .card .face.face2 {
+    transform: translateY(0); /* Убираем анимацию */
+    background: #fff; /* Сохраняем фон */
+    display: flex; /* Показываем второй слой */
+  }
+
+  /* Увеличиваем размер текста для лучшей читаемости */
+  .home-section .container .card .face.face2 .content h3 {
+    font-size: 18px;
+  }
+
+  .home-section .container .card .face.face2 .content p {
+    font-size: 14px;
+  }
+}

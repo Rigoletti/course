@@ -1,0 +1,31 @@
+http://localhost:5000/api/categories
+
+{
+    "title": "Веб-сайты, IT и Программирование",
+    "icon": "FaDesktop",
+    "services": ["PHP", "HTML", "JavaScript", "React", "Node.js"],
+    "link": "/web-development"
+}
+
+
+
+http://localhost:5000/api/auth/register
+{
+  "firstName": "Admin",
+  "lastName": "User",
+  "username": "adminuser",
+  "email": "admin@example.com",
+  "password": "Securepassword123$",
+  "confirmPassword":"Securepassword123$",
+  "role": "admin"
+}
+
+http://localhost:5000/api/orders
+
+{
+  "title": "Разработка лендинга для интернет-магазина",
+  "daysLeft": 10,
+  "description": "Требуется разработка лендинга для интернет-магазина с использованием современных технологий. Лендинг должен быть адаптивным, быстрым и SEO-оптимизированным.",
+  "skills": ["HTML", "CSS", "JavaScript", "React", "SEO"],
+  "price": 30000
+}

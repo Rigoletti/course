@@ -1,0 +1,84 @@
+/* Стили для выбранных навыков */
+.skill-tag {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.remove-skill-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+}
+
+.remove-skill-btn:hover {
+  color: #ffcccc;
+}
+
+/* Стили для предложенных навыков */
+.skill-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
+}
+
+.skill-item:hover {
+  background-color: #f8f9fa;
+}
+
+.btn-add-skill {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-add-skill:hover {
+  background-color: #218838;
+}
+
+/* Стили для кнопки "Далее" */
+.btn-next-step {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.btn-next-step:hover {
+  background-color: #0056b3;
+}
+
+/* Стили для кнопки "Опубликовать проект" */
+.btn-publish {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.btn-publish:hover {
+  background-color: #218838;
+}

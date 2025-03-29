@@ -1,0 +1,73 @@
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+  }
+  
+  .card-header {
+    border-radius: 15px 15px 0 0 !important;
+  }
+  
+  .form-control {
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s;
+  }
+  
+  .form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+  
+  .btn-primary {
+    background-color: #2b3137;
+    border-color: #2b3137;
+    padding: 12px;
+    border-radius: 8px;
+    transition: all 0.3s;
+  }
+  
+  .btn-primary:hover {
+    background-color: #404852;
+    border-color: #404852;
+  }
+  
+  .btn-primary:focus {
+    box-shadow: 0 0 0 0.25rem rgba(43, 49, 55, 0.5);
+  }
+  
+  .invalid-feedback {
+    font-size: 0.875rem;
+  }
+  
+  .alert {
+    border-radius: 8px;
+  }
+  
+  /* Анимация для карточки */
+  .card {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Адаптация для мобильных */
+  @media (max-width: 576px) {
+    .card {
+      border-radius: 0;
+    }
+    
+    .container {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }

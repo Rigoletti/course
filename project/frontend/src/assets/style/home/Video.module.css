@@ -1,0 +1,126 @@
+/* Общие стили */
+.videoSection {
+  font-family: 'Roboto', serif;
+}
+
+/* Контейнер кнопок */
+.dFlex {
+  display: flex;
+  flex-direction: column; /* Столбцовая ориентация по умолчанию */
+  gap: 20px;
+  width: 100%; /* Занимает всю ширину */
+}
+
+/* На ширине больше 768px меняем на строку */
+@media (min-width: 768px) {
+  .dFlex {
+    flex-direction: row;
+  }
+}
+
+/* Стили для кнопок */
+.wrapper {
+  position: relative;
+  width: 100%; /* Адаптивная ширина */
+  max-width: 250px; /* Максимальная ширина кнопки */
+  margin: 0 auto; /* Центрируем кнопки */
+}
+
+.linkWrapper {
+  position: relative;
+}
+
+.linkWrapper a {
+  display: block;
+  width: 100%; /* Адаптивная ширина */
+  height: 50px;
+  line-height: 50px;
+  font-weight: bold;
+  text-decoration: none;
+  background: #333;
+  text-align: center;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 3px solid #333;
+  transition: all 0.35s;
+}
+
+.icon {
+  width: 50px;
+  height: 50px;
+  border: 3px solid transparent;
+  position: absolute;
+  transform: rotate(45deg);
+  right: 0;
+  top: 0;
+  z-index: -1;
+  transition: all 0.35s;
+}
+
+.icon svg {
+  width: 30px;
+  position: absolute;
+  top: calc(50% - 15px);
+  left: calc(50% - 15px);
+  transform: rotate(-45deg);
+  fill: #2ecc71;
+  transition: all 0.35s;
+}
+
+.linkWrapper a:hover {
+  border: 3px solid #2ecc71;
+  background: transparent;
+  color: #2ecc71;
+}
+
+.linkWrapper a:hover + .icon {
+  border: 3px solid #2ecc71;
+  right: -25%;
+}
+
+/* Стили для списка */
+.list {
+  padding-left: 20px; 
+  margin: 0; 
+  list-style-type: disc; 
+  list-style-position: outside;
+}
+
+/* Стили для элементов списка */
+.listItem {
+  margin: 5px 0;
+  padding: 0; 
+  display: flex; 
+  align-items: center; 
+}
+
+/* Переопределяем стиль маркеров */
+.listItem::before {
+  content: "•"; 
+  color: currentColor; 
+  font-size: 1em; 
+  margin-right: 8px; 
+  position: relative;
+  top: 2px; 
+}
+
+/* Увеличиваем высоту контента, чтобы поместить обе кнопки */
+main {
+  min-height: 100vh; /* Минимальная высота равна высоте viewport */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Для маленьких экранов */
+@media (max-width: 768px) {
+  .dFlex {
+    flex-direction: column; /* Вертикальное расположение */
+    gap: 15px; /* Уменьшаем отступ между кнопками */
+  }
+
+  .wrapper {
+    max-width: 100%; /* Полная ширина на маленьких экранах */
+  }
+}
